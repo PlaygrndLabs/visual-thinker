@@ -47,6 +47,7 @@ function ThinkingCanvas() {
 
   const onPaneClick = useCallback(
     (event) => {
+      if (event.button !== 0) return
       createIdeaAtScreenPoint({ x: event.clientX, y: event.clientY })
     },
     [createIdeaAtScreenPoint],
@@ -90,7 +91,8 @@ function ThinkingCanvas() {
           style: { stroke: 'var(--primary)', strokeWidth: 2 },
         }}
         deleteKeyCode={['Backspace', 'Delete']}
-        panOnDrag={false}
+        panOnDrag={[1]}
+        panActivationKeyCode="Space"
         panOnScroll={false}
         minZoom={0.2}
         maxZoom={2.4}
@@ -106,6 +108,14 @@ function ThinkingCanvas() {
           <Button size="icon" onClick={onAddIdea} aria-label="Add an idea">
             <Plus aria-hidden="true" />
           </Button>
+        </Panel>
+        <Panel
+          position="bottom-right"
+          className="m-5 rounded-lg border border-border/80 bg-background/85 px-3 py-2 text-xs text-muted-foreground shadow-sm backdrop-blur"
+        >
+          <kbd className="font-sans font-medium text-foreground">Space</kbd> + drag or middle-drag to pan
+          <span className="mx-2 text-border">·</span>
+          Scroll to zoom
         </Panel>
         <Background
           variant={BackgroundVariant.Dots}
