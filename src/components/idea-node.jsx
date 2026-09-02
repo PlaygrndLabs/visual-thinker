@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useReactFlow } from '@xyflow/react'
+import { Handle, Position, useReactFlow } from '@xyflow/react'
 
 export function IdeaNode({ id, data, selected }) {
   const inputRef = useRef(null)
@@ -15,12 +15,19 @@ export function IdeaNode({ id, data, selected }) {
 
   return (
     <div
-      className={`min-w-48 rounded-xl border bg-card px-3 py-2 shadow-[0_8px_24px_oklch(0.25_0.03_260/0.08)] transition-[border-color,box-shadow] ${
+      className={`group min-w-48 rounded-xl border bg-card px-3 py-2 shadow-[0_8px_24px_oklch(0.25_0.03_260/0.08)] transition-[border-color,box-shadow] ${
         selected
           ? 'border-primary shadow-[0_0_0_3px_oklch(0.58_0.2_260/0.16),0_8px_24px_oklch(0.25_0.03_260/0.1)]'
           : 'border-border'
       }`}
     >
+      <Handle
+        type="target"
+        position={Position.Left}
+        className={`!h-3 !w-3 !border-2 !border-card !bg-primary transition-opacity ${
+          selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+        }`}
+      />
       <input
         ref={inputRef}
         className="nodrag nowheel block w-full bg-transparent text-sm font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
@@ -32,6 +39,13 @@ export function IdeaNode({ id, data, selected }) {
           }
         }}
         aria-label="Idea text"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className={`!h-3 !w-3 !border-2 !border-card !bg-primary transition-opacity ${
+          selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+        }`}
       />
     </div>
   )

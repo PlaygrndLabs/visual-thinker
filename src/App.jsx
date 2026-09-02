@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import {
+  addEdge,
+  applyEdgeChanges,
   applyNodeChanges,
   Background,
   BackgroundVariant,
@@ -17,6 +19,7 @@ const nodeTypes = { idea: IdeaNode }
 
 function ThinkingCanvas() {
   const [nodes, setNodes] = useState([])
+  const [edges, setEdges] = useState([])
   const nextNodeId = useRef(1)
   const { screenToFlowPosition } = useReactFlow()
 
@@ -58,14 +61,34 @@ function ThinkingCanvas() {
     [],
   )
 
+  const onEdgesChange = useCallback(
+    (changes) => setEdges((currentEdges) => applyEdgeChanges(changes, currentEdges)),
+    [],
+  )
+
+  const onConnect = useCallback(
+    (connection) =>
+      setEdges((currentEdges) =>
+        addEdge({ ...connection, type: 'smoothstep' }, currentEdges),
+      ),
+    [],
+  )
+
   return (
     <main className="h-screen w-screen bg-background">
       <ReactFlow
         nodes={nodes}
-        edges={[]}
+        edges={edges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
         onPaneClick={onPaneClick}
+        connectionRadius={28}
+        defaultEdgeOptions={{
+          type: 'smoothstep',
+          style: { stroke: 'var(--primary)', strokeWidth: 2 },
+        }}
         deleteKeyCode={['Backspace', 'Delete']}
         panOnDrag={false}
         panOnScroll={false}
