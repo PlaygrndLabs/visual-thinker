@@ -92,9 +92,11 @@ function ThinkingCanvas() {
         deleteKeyCode={['Backspace', 'Delete']}
         panOnDrag={false}
         panOnScroll={false}
+        minZoom={0.2}
+        maxZoom={2.4}
         zoomOnDoubleClick={false}
         zoomOnPinch={false}
-        zoomOnScroll={false}
+        zoomOnScroll
       >
         <Panel position="top-left" className="m-5 flex items-center gap-3">
           <div className="rounded-xl border border-border/80 bg-background/90 px-3 py-2 shadow-sm backdrop-blur">
