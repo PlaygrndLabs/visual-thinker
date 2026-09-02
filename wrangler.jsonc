@@ -1,7 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "visual-thinker",
-  "account_id": "89fd51a3849a72aec888f0fd880c6070",
   "compatibility_date": "2026-09-03",
   "pages_build_output_dir": "./dist"
 }

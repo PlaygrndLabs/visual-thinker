@@ -9,7 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "pages:dev": "wrangler pages dev",
-    "pages:deploy": "bun run build && wrangler pages deploy",
+    "pages:deploy": "bun run build && CLOUDFLARE_ACCOUNT_ID=89fd51a3849a72aec888f0fd880c6070 wrangler pages deploy",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
