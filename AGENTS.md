@@ -5,6 +5,7 @@ Rules
 .md files that AI writes & reads are not real MD, they are plain text storage for AI prompts. don't follow MD formatting/hierarchy too much
 
 - Use Bun for dependency management and project scripts.
+- Do not create worktrees or work in branches. Work only on `main` in the current checkout.
 - Keep the primary experience focused on the full-screen visual thinking canvas.
 - Prefer direct manipulation, fast keyboard and mouse interactions, and quiet interface chrome.
 - Make one commit per feature or distinct setup step.
