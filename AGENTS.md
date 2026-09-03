@@ -7,6 +7,7 @@ Visual Thinker is a visual playground for thinking, reasoning, and pure thinking
 - Use the same wording fidelity for instructions the user asks to add to `AGENTS.md`.
 - No TDD is needed to define the details of what has to be and what does not have to be. Tests are not cheap, and too many tests are a burden. Tests should be curated and arranged with the user. So far, this project does not need any tests.
 - Use Bun for dependency management and project scripts.
+- Avoid CSS; use Tailwind classes.
 - Do not create worktrees or work in branches. Work only on `main` in the current checkout.
 - Keep the primary experience focused on the full-screen visual thinking canvas.
 - Prefer direct manipulation, fast keyboard and mouse interactions, and quiet interface chrome.

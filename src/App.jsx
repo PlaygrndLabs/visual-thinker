@@ -12,6 +12,7 @@ import {
 } from '@xyflow/react'
 
 import { IdeaNode } from '@/components/idea-node'
+import { Logotype } from '@/components/logotype'
 
 const nodeTypes = { idea: IdeaNode }
 
@@ -96,9 +97,7 @@ function ThinkingCanvas() {
         zoomOnScroll
       >
         <Panel position="top-left" className="m-5">
-          <h1 className="wordmark" aria-label="Visual Thinker">
-            Visual Thinker
-          </h1>
+          <Logotype />
         </Panel>
         <Panel
           position="bottom-right"

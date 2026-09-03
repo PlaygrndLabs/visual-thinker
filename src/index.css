@@ -142,21 +142,3 @@
     @apply font-sans;
   }
 }
-
-@layer components {
-  .wordmark {
-    margin: 0;
-    color: color-mix(in oklch, var(--foreground) 86%, var(--primary));
-    font-family: "Bodoni Moda Variable", "Bodoni 72", Didot, serif;
-    font-size: clamp(1.125rem, 1.4vw, 1.25rem);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -0.035em;
-    font-optical-sizing: auto;
-    pointer-events: none;
-    user-select: none;
-    transform: scaleX(0.9);
-    transform-origin: left center;
-    text-wrap: nowrap;
-  }
-}
