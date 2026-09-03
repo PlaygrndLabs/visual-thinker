@@ -13,8 +13,10 @@
 - The project includes Storybook, shadcn, and React Flow.
 - The app page is a full-screen React Flow canvas.
 - The project can run locally with `make dev`, which uses Bun.
-- The project is configured for deployment to Cloudflare Pages with Wrangler using the PlaygrndLabs Cloudflare account.
-- Every push to `main` builds that pushed revision with Bun and deploys it to `https://visual-thinker.pages.dev/` with Wrangler through GitHub Actions, providing the push-to-deploy behavior of a repository-connected Cloudflare Pages project.
+- Visual Thinker is deployed through a Cloudflare Pages project in the PlaygrndLabs Cloudflare account at `https://visual-thinker.pages.dev/`.
+- The Cloudflare Pages project is connected natively to the `PlaygrndLabs/visual-thinker` GitHub repository.
+- Cloudflare Pages builds every push to `main` for production and creates preview deployments for every other branch and pull request.
+- The Cloudflare Pages build runs `bun run build` from the repository root and publishes `dist`.
 </area>
 
 <area name="Basic brainstorm diagramming">
