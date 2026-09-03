@@ -34,12 +34,16 @@
 - Releasing the primary mouse button without dragging completes a click, creates an editable idea node at the clicked position, and focuses it for immediate typing.
 - Starting a primary-button drag cancels node creation and draws a selection rectangle.
 - The selection rectangle has the translucent blue fill and crisp, solid blue outline associated with the Windows XP Explorer and desktop selection rectangle; its border is not dotted or dashed.
+- After a rectangle selection is completed, selected nodes keep their individual selected-state highlighting without a shared rectangle bounding the selection.
+- A single clicked node is selected by itself and its text box receives focus for editing.
+- When multiple nodes are selected, their text boxes do not have editing focus.
 - The mouse wheel zooms the canvas in and out.
 - Middle-button drag pans the canvas.
 
 ### Keyboard
 
 - Holding Space while dragging pans the canvas.
+- Holding Shift while clicking nodes adds them to the selection.
 - Backspace or Delete removes selected nodes or edges.
 </interactivity>
 

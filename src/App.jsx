@@ -17,6 +17,12 @@ import { IdeaNode } from '@/components/idea-node'
 import { Logotype } from '@/components/logotype'
 
 const nodeTypes = { idea: IdeaNode }
+const canvasSelectionStyles = String.raw`
+  [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-background-color:transparent]
+  [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-border:none]
+  [&_.react-flow\_\_selection]:[--xy-selection-background-color:rgb(49_106_197_/_0.15)]
+  [&_.react-flow\_\_selection]:[--xy-selection-border:1px_solid_#316ac5]
+`
 
 function ThinkingCanvas() {
   const [nodes, setNodes] = useState([])
@@ -81,6 +87,15 @@ function ThinkingCanvas() {
     [],
   )
 
+  const onSelectionChange = useCallback(({ nodes: selectedNodes }) => {
+    if (selectedNodes.length < 2) return
+
+    const activeElement = document.activeElement
+    if (activeElement?.matches('.react-flow__node-idea input')) {
+      activeElement.blur()
+    }
+  }, [])
+
   const handleZoomIn = useCallback(() => {
     setIsFitViewActive(false)
     zoomIn({ duration: 200 })
@@ -114,6 +129,7 @@ function ThinkingCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onSelectionChange={onSelectionChange}
         onMoveStart={(event) => {
           if (event) setIsFitViewActive(false)
         }}
@@ -124,12 +140,13 @@ function ThinkingCanvas() {
           style: { stroke: 'var(--primary)', strokeWidth: 2 },
         }}
         deleteKeyCode={['Backspace', 'Delete']}
+        multiSelectionKeyCode="Shift"
         panOnDrag={[1]}
         panActivationKeyCode="Space"
         panOnScroll={false}
         paneClickDistance={3}
         selectionOnDrag
-        className="[--xy-selection-background-color:rgb(49_106_197_/_0.15)] [--xy-selection-border:1px_solid_#316ac5]"
+        className={canvasSelectionStyles}
         minZoom={0.2}
         maxZoom={2.4}
         proOptions={{ hideAttribution: true }}
