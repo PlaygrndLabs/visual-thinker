@@ -16,7 +16,7 @@
 - Visual Thinker is deployed through a Cloudflare Pages project in the PlaygrndLabs Cloudflare account at `https://visual-thinker.pages.dev/`.
 - The Cloudflare Pages project is connected natively to the `PlaygrndLabs/visual-thinker` GitHub repository.
 - Cloudflare Pages builds every push to `main` for production and creates preview deployments for every other branch and pull request.
-- The Cloudflare Pages build runs `bun run build` from the repository root and publishes `dist`.
+- The Cloudflare Pages build runs `bun install --frozen-lockfile` followed by `bun run build` from the repository root and publishes `dist`.
 </area>
 
 <area name="Basic brainstorm diagramming">
