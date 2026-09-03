@@ -30,7 +30,7 @@
 - The logotype’s current size is right, and the logotype is implemented as a dedicated component.
 - React Flow attribution is not shown.
 - The “Space + drag or middle-drag to pan · Scroll to zoom” hint remains as muted small text without a box style and sits in the middle of the bottom edge.
-- Google Maps-style controls at the bottom right provide zoom-in, zoom-out, and fit-all actions.
+- A vertical stack of Google Maps-style controls at the bottom right provides zoom-in, zoom-out, and fit-all actions.
 - The fit-all control toggles between fitting all canvas content into view and restoring the user’s previously chosen pan and zoom.
 </area>
 </specs>

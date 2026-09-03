@@ -146,7 +146,7 @@ function ThinkingCanvas() {
           Scroll to zoom
         </Panel>
         <Panel position="bottom-right" className="m-5">
-          <div className="overflow-hidden rounded-xl border bg-background/95 shadow-[0_8px_24px_oklch(0.25_0.03_260/0.12)] backdrop-blur-sm">
+          <div className="flex flex-col overflow-hidden rounded-xl border bg-background/95 shadow-[0_8px_24px_oklch(0.25_0.03_260/0.12)] backdrop-blur-sm">
             <Button
               aria-label="Zoom in"
               className="size-10 rounded-none border-b"
