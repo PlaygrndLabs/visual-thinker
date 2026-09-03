@@ -69,6 +69,12 @@
 - The bottom-right controls are offset upward by the height of one line of instruction text.
 </area>
 
+<area name="Context menu">
+- Right-clicking the canvas opens a shadcn context menu.
+- The context menu provides a Clear action that removes every node and edge from the canvas.
+- The Clear action is unavailable when the canvas is already empty.
+</area>
+
 <area name="Instructions">
 - The “Space + drag or middle-drag to pan · Scroll to zoom” hint is muted small text without a box style, sits in the middle of the bottom edge, uses the available horizontal space, and does not wrap onto another line.
 </area>
