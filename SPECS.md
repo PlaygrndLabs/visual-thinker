@@ -56,6 +56,8 @@
 - Canvas changes can be redone with Ctrl+Shift+Z, Ctrl+Y, Command+Shift+Z, or Command+Y.
 - Selected canvas items can be copied with Ctrl+C or Command+C, pasted with Ctrl+V or Command+V, and cut with Ctrl+X or Command+X.
 - Copying nodes includes the connections between copied nodes; pasted items receive new identities, appear offset from their originals, and become the current selection.
+- Pasting external single-line plain text creates one selected idea node near the center of the viewport.
+- Pasting external multi-line plain text creates one selected idea node for each non-empty line and arranges those ideas in a vertical stack near the center of the viewport.
 - Canvas clipboard shortcuts do not replace native text-editing clipboard behavior while an idea text field has focus.
 - Creating, connecting, deleting, clearing, moving, and editing ideas are undoable canvas changes.
 - Cutting and pasting canvas items are undoable canvas changes; copying them is not a canvas change.

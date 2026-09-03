@@ -62,10 +62,6 @@ function ThinkingCanvas() {
   } = useCanvasHistory(loadCanvas)
   const [isFitViewActive, setIsFitViewActive] = useState(false)
   const savedViewport = useRef(null)
-  const { copySelection, cutSelection, pasteSelection } = useCanvasClipboard(
-    canvas,
-    updateCanvas,
-  )
   const {
     fitView,
     getViewport,
@@ -74,6 +70,11 @@ function ThinkingCanvas() {
     zoomIn,
     zoomOut,
   } = useReactFlow()
+  const { copySelection, cutSelection, pasteSelection } = useCanvasClipboard(
+    canvas,
+    screenToFlowPosition,
+    updateCanvas,
+  )
 
   useEffect(() => {
     try {
@@ -176,9 +177,21 @@ function ThinkingCanvas() {
       { hotkey: 'Mod+Z', callback: undo },
       { hotkey: 'Mod+Shift+Z', callback: redo },
       { hotkey: 'Mod+Y', callback: redo },
-      { hotkey: 'Mod+C', callback: copySelection },
-      { hotkey: 'Mod+V', callback: pasteSelection },
-      { hotkey: 'Mod+X', callback: cutSelection },
+      {
+        hotkey: 'Mod+C',
+        callback: copySelection,
+        options: { preventDefault: false },
+      },
+      {
+        hotkey: 'Mod+V',
+        callback: pasteSelection,
+        options: { preventDefault: false },
+      },
+      {
+        hotkey: 'Mod+X',
+        callback: cutSelection,
+        options: { preventDefault: false },
+      },
     ],
     { ignoreInputs: true },
   )
