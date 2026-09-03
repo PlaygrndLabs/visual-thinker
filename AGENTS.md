@@ -1,6 +1,6 @@
 Visual Thinker is a visual playground for thinking, reasoning, and pure thinking-based discovery. Build it as an immediate, spacious working surface where ideas can be created, connected, rearranged, and explored with minimal friction.
 
-.md files that AI writes & reads are plain-text context for AI, not documents that need one fixed format. Use the most LLM-efficient mix of sparse Markdown, lightweight XML, and unformatted text: keep hierarchy clear without wasting tokens on repeated tags or decorative formatting. Prefer Markdown headings and lists for simple structure, plain text where structure adds nothing, and XML only when semantic boundaries or nesting make it clearer.
+.md files that AI writes & reads are plain-text context for AI, not documents that need one fixed format. Use XML for semantic structure and Markdown for content within that structure. Keep meaningful containers; avoid unnecessary leaf tags. Plain text can remain wherever neither adds clarity.
 
 - `SPECS.md` is the durable definition of what the project has to be and do. Collect every user prompt that counts as spec there.
 - A spec cannot stay verbatim when the prompt is a directive or request to change something. Convert it to spec-definition language, but keep the user's wording, don't paraphrase too much, and stay faithful to what they typed.
