@@ -139,13 +139,13 @@ function ThinkingCanvas() {
         </Panel>
         <Panel
           position="bottom-center"
-          className="m-5 text-xs text-muted-foreground"
+          className="m-5 whitespace-nowrap text-xs text-muted-foreground"
         >
           <kbd className="font-sans">Space</kbd> + drag or middle-drag to pan
           <span className="mx-2 text-border">·</span>
           Scroll to zoom
         </Panel>
-        <Panel position="bottom-right" className="m-5">
+        <Panel position="bottom-right" className="mx-5 mb-9 mt-5">
           <div className="flex flex-col items-center gap-2">
             <Button
               aria-label={

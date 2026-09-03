@@ -39,10 +39,11 @@
 - The standalone fit-all control uses the same border treatment as the grouped zoom controls.
 - Viewport controls keep neutral coloring and remain visually stationary when pressed.
 - The fit-all control toggles between fitting all canvas content into view and restoring the user’s previously chosen pan and zoom.
+- The bottom-right controls are offset upward by the height of one line of instruction text.
 </area>
 
 <area name="Instructions">
-- The “Space + drag or middle-drag to pan · Scroll to zoom” hint is muted small text without a box style and sits in the middle of the bottom edge.
+- The “Space + drag or middle-drag to pan · Scroll to zoom” hint is muted small text without a box style, sits in the middle of the bottom edge, uses the available horizontal space, and does not wrap onto another line.
 </area>
 </area>
 </specs>
