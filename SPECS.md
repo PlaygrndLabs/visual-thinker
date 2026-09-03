@@ -51,7 +51,7 @@
 
 <area name="Controls">
 - Compact Google Maps-style controls at the bottom right provide zoom-in, zoom-out, and fit-all actions. Zoom-in and zoom-out form a joined vertical group; fit-all is a standalone control above them.
-- Canvas floating controls use a dedicated `CanvasFloatingButton` component built on the shared shadcn `Button`, with a tighter corner radius than standard buttons.
+- Canvas floating controls use a dedicated `CanvasFloatingButton` component built on the shared shadcn `Button`, with a 6px outer corner radius.
 - The standalone fit-all control uses the same neutral background, border, and icon colors as the grouped zoom controls, including when the fit-all action is unavailable.
 - Viewport controls keep neutral coloring and remain visually stationary when pressed.
 - The fit-all control toggles between fitting all canvas content into view and restoring the user’s previously chosen pan and zoom.

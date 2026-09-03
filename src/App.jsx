@@ -163,7 +163,7 @@ function ThinkingCanvas() {
             >
               <Maximize />
             </CanvasFloatingButton>
-            <div className="flex flex-col overflow-hidden rounded-md border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm">
+            <div className="flex flex-col overflow-hidden rounded-sm border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm">
               <CanvasFloatingButton
                 aria-label="Zoom in"
                 className="border-b"

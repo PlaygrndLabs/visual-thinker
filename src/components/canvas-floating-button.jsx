@@ -9,7 +9,7 @@ function CanvasFloatingButton({ className, grouped = false, ...props }) {
         'size-8 active:translate-y-0! disabled:opacity-100',
         grouped
           ? 'rounded-none'
-          : 'rounded-md border border-border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm',
+          : 'rounded-sm border border-border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm',
         className,
       )}
       size="icon"
