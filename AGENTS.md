@@ -12,6 +12,7 @@ Visual Thinker is a visual playground for thinking, reasoning, and pure thinking
 - No TDD is needed to define the details of what has to be and what does not have to be. Tests are not cheap, and too many tests are a burden. Tests should be curated and arranged with the user. So far, this project does not need any tests.
 - Use Bun for dependency management and project scripts.
 - Avoid CSS; use Tailwind classes.
+- Do not use the ChatGPT Sites workflow, the `sites:sites-building` or `sites:sites-hosting` skills, or ChatGPT Sites hosting for this project, including for ordinary web app changes. Use local development and the repository's existing Cloudflare deployment workflow instead.
 - This project overrides the machine-wide default that agents do not run project servers. Adhere to this project's workflow requirements instead.
 - For each new chat session that includes tasks, create and use a new worktree dedicated to that session so it does not conflict with other AI chat sessions working in their own worktrees.
 - Open an internal terminal in the ChatGPT app in that session's worktree directory so the user can see it, and run `make dev` there on a dedicated localhost port that does not conflict with the servers used by other AI chat sessions.
