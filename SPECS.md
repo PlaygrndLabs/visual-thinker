@@ -17,6 +17,7 @@
 - The Cloudflare Pages project is connected natively to the `PlaygrndLabs/visual-thinker` GitHub repository.
 - Cloudflare Pages builds every push to `main` for production and creates preview deployments for every other branch and pull request.
 - The Cloudflare Pages build runs `bun install --frozen-lockfile` followed by `bun run build` from the repository root and publishes `dist`.
+- Native Cloudflare Pages Git integration is the only deployment path; the repository contains no manual Cloudflare deployment tooling or configuration.
 </area>
 
 <area name="Basic brainstorm diagramming">

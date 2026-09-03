@@ -17,8 +17,7 @@ If you are developing a production application, we recommend using TypeScript wi
 
 ## Cloudflare Pages
 
-The Wrangler configuration targets the `visual-thinker` Pages project and publishes the Vite `dist` directory. The deployment script selects the PlaygrndLabs Cloudflare account.
+Cloudflare Pages is connected directly to the `PlaygrndLabs/visual-thinker` GitHub repository. Every push to `main` deploys production automatically, while other branches and pull requests receive preview deployments.
 
 - Build the production assets with `bun run build`.
-- Preview the built site in the Pages runtime with `bun run pages:dev`.
-- Deploy deliberately with `bun run pages:deploy`. The first deployment may create the Pages project if it does not already exist.
+- Cloudflare Pages runs `bun install --frozen-lockfile && bun run build` and publishes `dist`.
