@@ -12,9 +12,9 @@ import {
 } from '@xyflow/react'
 import { Maximize, Minus, Plus } from 'lucide-react'
 
+import { CanvasFloatingButton } from '@/components/canvas-floating-button'
 import { IdeaNode } from '@/components/idea-node'
 import { Logotype } from '@/components/logotype'
-import { Button } from '@/components/ui/button'
 
 const nodeTypes = { idea: IdeaNode }
 
@@ -150,43 +150,37 @@ function ThinkingCanvas() {
         </Panel>
         <Panel position="bottom-right" className="m-5 -translate-y-4">
           <div className="flex flex-col items-center gap-2">
-            <Button
+            <CanvasFloatingButton
               aria-label={
                 isFitViewActive ? 'Restore previous view' : 'Fit all content'
               }
               aria-pressed={isFitViewActive}
-              className="size-8 border border-border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm active:translate-y-0! disabled:opacity-100"
               disabled={nodes.length === 0}
               onClick={toggleFitView}
-              size="icon"
               title={
                 isFitViewActive ? 'Restore previous view' : 'Fit all content'
               }
-              variant="ghost"
             >
               <Maximize />
-            </Button>
-            <div className="flex flex-col overflow-hidden rounded-lg border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm">
-              <Button
+            </CanvasFloatingButton>
+            <div className="flex flex-col overflow-hidden rounded-md border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm">
+              <CanvasFloatingButton
                 aria-label="Zoom in"
-                className="size-8 rounded-none border-b"
+                className="border-b"
+                grouped
                 onClick={handleZoomIn}
-                size="icon"
                 title="Zoom in"
-                variant="ghost"
               >
                 <Plus />
-              </Button>
-              <Button
+              </CanvasFloatingButton>
+              <CanvasFloatingButton
                 aria-label="Zoom out"
-                className="size-8 rounded-none"
+                grouped
                 onClick={handleZoomOut}
-                size="icon"
                 title="Zoom out"
-                variant="ghost"
               >
                 <Minus />
-              </Button>
+              </CanvasFloatingButton>
             </div>
           </div>
         </Panel>
