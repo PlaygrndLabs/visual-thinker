@@ -21,14 +21,27 @@
 
 <area name="Basic brainstorm diagramming">
 - The canvas has interactive mouse- and keyboard-based basic brainstorm diagramming tools.
-- Clicking the canvas creates an editable idea node at the clicked position and focuses it for immediate typing.
 - Nodes can be easily connected by dragging their handles.
-- The mouse wheel zooms the canvas in and out.
-- Space + drag or middle-click + drag pans the canvas.
 </area>
 
 <area name="Canvas">
 - React Flow attribution is not shown.
+
+<interactivity>
+### Mouse
+
+- Pressing the primary mouse button on empty canvas is provisional and does not itself create a node or perform another definitive action.
+- Releasing the primary mouse button without dragging completes a click, creates an editable idea node at the clicked position, and focuses it for immediate typing.
+- Starting a primary-button drag cancels node creation and draws a selection rectangle.
+- The selection rectangle has the translucent blue fill and crisp blue outline associated with the Windows XP Explorer and desktop selection rectangle.
+- The mouse wheel zooms the canvas in and out.
+- Middle-button drag pans the canvas.
+
+### Keyboard
+
+- Holding Space while dragging pans the canvas.
+- Backspace or Delete removes selected nodes or edges.
+</interactivity>
 
 <area name="Logo">
 - A floating “Visual Thinker” label gives the app its own unique identity with minimal branding; it sits at the top left in a narrow, chic/classy serif font.

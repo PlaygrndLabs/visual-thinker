@@ -127,6 +127,9 @@ function ThinkingCanvas() {
         panOnDrag={[1]}
         panActivationKeyCode="Space"
         panOnScroll={false}
+        paneClickDistance={3}
+        selectionOnDrag
+        className="[&_.react-flow__selection]:border [&_.react-flow__selection]:border-solid [&_.react-flow__selection]:border-[#316ac5] [&_.react-flow__selection]:bg-[#316ac5]/15"
         minZoom={0.2}
         maxZoom={2.4}
         proOptions={{ hideAttribution: true }}
