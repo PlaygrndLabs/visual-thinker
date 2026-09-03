@@ -15,7 +15,7 @@ import { Maximize, Minus, Plus } from 'lucide-react'
 
 import { CanvasFloatingButton } from '@/components/canvas-floating-button'
 import { IdeaNode } from '@/components/idea-node'
-import { Logotype } from '@/components/logotype'
+import { Logo } from '@/components/logo'
 import { CanvasHistoryProvider } from '@/contexts/canvas-history-context'
 import {
   ContextMenu,
@@ -234,7 +234,7 @@ function ThinkingCanvas() {
               zoomOnScroll
             >
               <Panel position="top-left" className="m-5">
-                <Logotype />
+                <Logo />
               </Panel>
               <Panel
                 position="bottom-center"
