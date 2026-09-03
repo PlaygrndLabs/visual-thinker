@@ -60,9 +60,9 @@
 </interactivity>
 
 <area name="Logo">
-- A floating “Visual Thinker” label gives the app its own unique identity with minimal branding; it sits at the top left in a narrow, chic/classy serif font.
-- The logotype uses a semibold (600) font weight.
-- The logotype uses open, airy letter spacing rather than tight tracking.
+- A floating “Visual Thinker” label gives the app its own unique identity with minimal branding; it sits at the top left in Source Serif 4 ExtraLight at font weight 200.
+- The logotype prefers a device-installed Source Serif 4 ExtraLight face and loads its Latin glyphs from Google Fonts when the device does not have the font.
+- The logotype uses the typeface's native spacing and proportions without letter-spacing, font-stretching, or other font-related Tailwind classes.
 - The logotype is implemented as a dedicated component.
 </area>
 
