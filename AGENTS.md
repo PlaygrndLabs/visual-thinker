@@ -8,7 +8,10 @@ Visual Thinker is a visual playground for thinking, reasoning, and pure thinking
 - No TDD is needed to define the details of what has to be and what does not have to be. Tests are not cheap, and too many tests are a burden. Tests should be curated and arranged with the user. So far, this project does not need any tests.
 - Use Bun for dependency management and project scripts.
 - Avoid CSS; use Tailwind classes.
-- Do not create worktrees or work in branches. Work only on `main` in the current checkout.
+- For each new chat session that includes tasks, create and use a new worktree for that session.
+- Open a terminal in the ChatGPT app in the worktree directory so the user can see it, and run `make dev` there.
+- Open a ChatGPT browser to the localhost port used by that worktree.
+- After every commit, merge it into `main` as well, then push `main`.
 - Keep the primary experience focused on the full-screen visual thinking canvas.
 - Prefer direct manipulation, fast keyboard and mouse interactions, and quiet interface chrome.
 - Make one commit per feature or distinct setup step.
