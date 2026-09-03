@@ -12,6 +12,7 @@
 - The project uses Bun.
 - The project includes Storybook, shadcn, and React Flow.
 - Keyboard shortcut handling uses `@tanstack/react-hotkeys`.
+- The `useLocalStorageState` hook accepts a storage key and default value, loads JSON state from browser localStorage on page load, saves state changes back to localStorage, and returns the same state-and-setter tuple as React `useState`.
 - The app page is a full-screen React Flow canvas.
 - The project can run locally with `make dev`, which uses Bun.
 - Visual Thinker is deployed through a Cloudflare Pages project in the PlaygrndLabs Cloudflare account at `https://visual-thinker.pages.dev/`.
