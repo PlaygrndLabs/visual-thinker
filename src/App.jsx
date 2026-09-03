@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useHotkeys } from '@tanstack/react-hotkeys'
 import {
   addEdge,
@@ -25,10 +25,13 @@ import {
 } from '@/components/ui/context-menu'
 import { useCanvasHistory } from '@/hooks/use-canvas-history'
 import { useCanvasClipboard } from '@/hooks/use-canvas-clipboard'
+import { useLocalStorageState } from '@/hooks/use-local-storage-state'
 
 const nodeTypes = { idea: IdeaNode }
 const canvasStorageKey = 'visual-thinker.canvas.v1'
+const viewportStorageKey = 'visual-thinker.viewport.v1'
 const emptyCanvas = { nodes: [], edges: [] }
+const defaultViewport = { x: 0, y: 0, zoom: 1 }
 const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-background-color:transparent]
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-border:none]
@@ -47,7 +50,10 @@ function ThinkingCanvas() {
     updateCanvas,
   } = useCanvasHistory(canvasStorageKey, emptyCanvas)
   const [isFitViewActive, setIsFitViewActive] = useState(false)
-  const savedViewport = useRef(null)
+  const [selectedViewport, setSelectedViewport] = useLocalStorageState(
+    viewportStorageKey,
+    defaultViewport,
+  )
   const {
     fitView,
     getViewport,
@@ -134,18 +140,26 @@ function ThinkingCanvas() {
     }
   }, [])
 
-  const handleZoomIn = useCallback(() => {
+  const handleZoomIn = useCallback(async () => {
     setIsFitViewActive(false)
-    zoomIn({ duration: 200 })
-  }, [zoomIn])
+    await zoomIn({ duration: 200 })
+    setSelectedViewport(getViewport())
+  }, [getViewport, setSelectedViewport, zoomIn])
 
-  const handleZoomOut = useCallback(() => {
+  const handleZoomOut = useCallback(async () => {
     setIsFitViewActive(false)
-    zoomOut({ duration: 200 })
-  }, [zoomOut])
+    await zoomOut({ duration: 200 })
+    setSelectedViewport(getViewport())
+  }, [getViewport, setSelectedViewport, zoomOut])
+
+  const handleMoveEnd = useCallback(
+    (event, viewport) => {
+      if (event) setSelectedViewport(viewport)
+    },
+    [setSelectedViewport],
+  )
 
   const clearCanvas = useCallback(() => {
-    savedViewport.current = null
     setIsFitViewActive(false)
     updateCanvas(emptyCanvas)
   }, [updateCanvas])
@@ -176,17 +190,14 @@ function ThinkingCanvas() {
 
   const toggleFitView = useCallback(async () => {
     if (isFitViewActive) {
-      if (savedViewport.current) {
-        await setViewport(savedViewport.current, { duration: 300 })
-      }
+      await setViewport(selectedViewport, { duration: 300 })
       setIsFitViewActive(false)
       return
     }
 
-    savedViewport.current = getViewport()
     const didFit = await fitView({ duration: 300, maxZoom: 1.4, padding: 0.2 })
     setIsFitViewActive(didFit)
-  }, [fitView, getViewport, isFitViewActive, setViewport])
+  }, [fitView, isFitViewActive, selectedViewport, setViewport])
 
   return (
     <CanvasHistoryProvider value={{ beginTransaction, commitTransaction }}>
@@ -211,6 +222,7 @@ function ThinkingCanvas() {
               onMoveStart={(event) => {
                 if (event) setIsFitViewActive(false)
               }}
+              onMoveEnd={handleMoveEnd}
               onPaneClick={onPaneClick}
               connectionRadius={28}
               defaultEdgeOptions={{
@@ -218,6 +230,7 @@ function ThinkingCanvas() {
                 style: { stroke: 'var(--primary)', strokeWidth: 2 },
               }}
               deleteKeyCode={['Backspace', 'Delete']}
+              defaultViewport={selectedViewport}
               multiSelectionKeyCode="Shift"
               panOnDrag={[1]}
               panActivationKeyCode="Space"

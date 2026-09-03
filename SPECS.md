@@ -34,6 +34,7 @@
 - All contents of the canvas come from a single state variable.
 - Canvas contents are stored in browser localStorage, saved after each change, and loaded on page load.
 - Canvas-content persistence uses the `useLocalStorageState` hook.
+- The user's selected pan and zoom are held together as one viewport state value and persist in browser localStorage through `useLocalStorageState`.
 </area>
 
 <interactivity>
