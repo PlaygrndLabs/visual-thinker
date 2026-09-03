@@ -49,6 +49,7 @@
 
 <area name="Logo">
 - A floating “Visual Thinker” label gives the app its own unique identity with minimal branding; it sits at the top left in a narrow, chic/classy serif font.
+- The logotype uses a semibold (600) font weight.
 - The logotype uses open, airy letter spacing rather than tight tracking.
 - The logotype is implemented as a dedicated component.
 </area>
