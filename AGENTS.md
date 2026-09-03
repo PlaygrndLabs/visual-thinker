@@ -4,13 +4,17 @@ Visual Thinker is a visual playground for thinking, reasoning, and pure thinking
 
 - `SPECS.md` is the durable definition of what the project has to be and do. Collect every user prompt that counts as spec there.
 - A spec cannot stay verbatim when the prompt is a directive or request to change something. Convert it to spec-definition language, but keep the user's wording, don't paraphrase too much, and stay faithful to what they typed.
+- Specs must be stateless and absolute: each spec must define the intended target independently of the implementation's current or previous state and must remain meaningful and correct as the implementation changes.
+- Do not preserve relative statements such as “the current size is right,” “keep it as is,” or “it remains unchanged” as specs. Convert them to an explicit absolute requirement only when the intended requirement is known; otherwise remove or omit them until it is clarified.
+- When adding or changing specs, audit related existing specs for state-dependent or ambiguous wording and remove any whose correct absolute requirement is uncertain.
 - Use the same wording fidelity for instructions the user asks to add to `AGENTS.md`.
 - No TDD is needed to define the details of what has to be and what does not have to be. Tests are not cheap, and too many tests are a burden. Tests should be curated and arranged with the user. So far, this project does not need any tests.
 - Use Bun for dependency management and project scripts.
 - Avoid CSS; use Tailwind classes.
-- For each new chat session that includes tasks, create and use a new worktree for that session.
-- Open a terminal in the ChatGPT app in the worktree directory so the user can see it, and run `make dev` there.
-- Open a ChatGPT browser to the localhost port used by that worktree.
+- This project overrides the machine-wide default that agents do not run project servers. Adhere to this project's workflow requirements instead.
+- For each new chat session that includes tasks, create and use a new worktree dedicated to that session so it does not conflict with other AI chat sessions working in their own worktrees.
+- Open an internal terminal in the ChatGPT app in that session's worktree directory so the user can see it, and run `make dev` there on a dedicated localhost port that does not conflict with the servers used by other AI chat sessions.
+- Open an internal ChatGPT browser to the localhost port dedicated to that session so the user can visually see and verify its features as they are added.
 - After every commit, merge it into `main` as well, then push `main`.
 - Keep the primary experience focused on the full-screen visual thinking canvas.
 - Prefer direct manipulation, fast keyboard and mouse interactions, and quiet interface chrome.

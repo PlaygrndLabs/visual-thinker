@@ -14,7 +14,7 @@
 - The app page is a full-screen React Flow canvas.
 - The project can run locally with `make dev`, which uses Bun.
 - The project is configured for deployment to Cloudflare Pages with Wrangler using the PlaygrndLabs Cloudflare account.
-- Every push to `main` builds the latest source with Bun and deploys it to `https://visual-thinker.pages.dev/` with Wrangler through GitHub Actions, providing the push-to-deploy behavior of a repository-connected Cloudflare Pages project.
+- Every push to `main` builds that pushed revision with Bun and deploys it to `https://visual-thinker.pages.dev/` with Wrangler through GitHub Actions, providing the push-to-deploy behavior of a repository-connected Cloudflare Pages project.
 </area>
 
 <area name="Basic brainstorm diagramming">
@@ -26,10 +26,10 @@
 </area>
 
 <area name="Canvas chrome">
-- A floating “Visual Thinker” label gives the app its own unique identity with minimal branding; it sits at the top left in a narrow, chic/classy serif font that is neither too large nor too small.
-- The logotype’s current size is right, and the logotype is implemented as a dedicated component.
+- A floating “Visual Thinker” label gives the app its own unique identity with minimal branding; it sits at the top left in a narrow, chic/classy serif font.
+- The logotype is implemented as a dedicated component.
 - React Flow attribution is not shown.
-- The “Space + drag or middle-drag to pan · Scroll to zoom” hint remains as muted small text without a box style and sits in the middle of the bottom edge.
+- The “Space + drag or middle-drag to pan · Scroll to zoom” hint is muted small text without a box style and sits in the middle of the bottom edge.
 - A vertical stack of Google Maps-style controls at the bottom right provides zoom-in, zoom-out, and fit-all actions.
 - The fit-all control toggles between fitting all canvas content into view and restoring the user’s previously chosen pan and zoom.
 </area>
