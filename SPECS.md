@@ -33,7 +33,7 @@
 - Pressing the primary mouse button on empty canvas is provisional and does not itself create a node or perform another definitive action.
 - Releasing the primary mouse button without dragging completes a click, creates an editable idea node at the clicked position, and focuses it for immediate typing.
 - Starting a primary-button drag cancels node creation and draws a selection rectangle.
-- The selection rectangle has the translucent blue fill and crisp blue outline associated with the Windows XP Explorer and desktop selection rectangle.
+- The selection rectangle has the translucent blue fill and crisp, solid blue outline associated with the Windows XP Explorer and desktop selection rectangle; its border is not dotted or dashed.
 - The mouse wheel zooms the canvas in and out.
 - Middle-button drag pans the canvas.
 
