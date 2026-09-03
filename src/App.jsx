@@ -10,10 +10,8 @@ import {
   ReactFlowProvider,
   useReactFlow,
 } from '@xyflow/react'
-import { Plus } from 'lucide-react'
 
 import { IdeaNode } from '@/components/idea-node'
-import { Button } from '@/components/ui/button'
 
 const nodeTypes = { idea: IdeaNode }
 
@@ -52,10 +50,6 @@ function ThinkingCanvas() {
     },
     [createIdeaAtScreenPoint],
   )
-
-  const onAddIdea = useCallback(() => {
-    createIdeaAtScreenPoint({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
-  }, [createIdeaAtScreenPoint])
 
   const onNodesChange = useCallback(
     (changes) => setNodes((currentNodes) => applyNodeChanges(changes, currentNodes)),
@@ -96,24 +90,16 @@ function ThinkingCanvas() {
         panOnScroll={false}
         minZoom={0.2}
         maxZoom={2.4}
+        proOptions={{ hideAttribution: true }}
         zoomOnDoubleClick={false}
         zoomOnPinch={false}
         zoomOnScroll
       >
-        <Panel position="top-left" className="m-5 flex items-center gap-3">
-          <div className="rounded-xl border border-border/80 bg-background/90 px-3 py-2 shadow-sm backdrop-blur">
-            <p className="text-sm font-semibold tracking-tight">Visual Thinker</p>
-            <p className="text-xs text-muted-foreground">Click the canvas to capture a thought</p>
-          </div>
-          <Button size="icon" onClick={onAddIdea} aria-label="Add an idea">
-            <Plus aria-hidden="true" />
-          </Button>
-        </Panel>
         <Panel
           position="bottom-right"
-          className="m-5 rounded-lg border border-border/80 bg-background/85 px-3 py-2 text-xs text-muted-foreground shadow-sm backdrop-blur"
+          className="m-5 text-xs text-muted-foreground"
         >
-          <kbd className="font-sans font-medium text-foreground">Space</kbd> + drag or middle-drag to pan
+          <kbd className="font-sans">Space</kbd> + drag or middle-drag to pan
           <span className="mx-2 text-border">·</span>
           Scroll to zoom
         </Panel>
