@@ -152,7 +152,7 @@ function ThinkingCanvas() {
                 isFitViewActive ? 'Restore previous view' : 'Fit all content'
               }
               aria-pressed={isFitViewActive}
-              className="size-8 border border-border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm active:translate-y-0!"
+              className="size-8 border border-border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm active:translate-y-0! disabled:opacity-100"
               disabled={nodes.length === 0}
               onClick={toggleFitView}
               size="icon"
