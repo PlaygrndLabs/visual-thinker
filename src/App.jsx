@@ -146,33 +146,13 @@ function ThinkingCanvas() {
           Scroll to zoom
         </Panel>
         <Panel position="bottom-right" className="m-5">
-          <div className="flex flex-col overflow-hidden rounded-xl border bg-background/95 shadow-[0_8px_24px_oklch(0.25_0.03_260/0.12)] backdrop-blur-sm">
-            <Button
-              aria-label="Zoom in"
-              className="size-10 rounded-none border-b"
-              onClick={handleZoomIn}
-              size="icon"
-              title="Zoom in"
-              variant="ghost"
-            >
-              <Plus />
-            </Button>
-            <Button
-              aria-label="Zoom out"
-              className="size-10 rounded-none border-b"
-              onClick={handleZoomOut}
-              size="icon"
-              title="Zoom out"
-              variant="ghost"
-            >
-              <Minus />
-            </Button>
+          <div className="flex flex-col items-center gap-2">
             <Button
               aria-label={
                 isFitViewActive ? 'Restore previous view' : 'Fit all content'
               }
               aria-pressed={isFitViewActive}
-              className={`size-10 rounded-none ${
+              className={`size-8 border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm ${
                 isFitViewActive ? 'bg-muted text-primary' : ''
               }`}
               disabled={nodes.length === 0}
@@ -185,6 +165,28 @@ function ThinkingCanvas() {
             >
               <Maximize />
             </Button>
+            <div className="flex flex-col overflow-hidden rounded-lg border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm">
+              <Button
+                aria-label="Zoom in"
+                className="size-8 rounded-none border-b"
+                onClick={handleZoomIn}
+                size="icon"
+                title="Zoom in"
+                variant="ghost"
+              >
+                <Plus />
+              </Button>
+              <Button
+                aria-label="Zoom out"
+                className="size-8 rounded-none"
+                onClick={handleZoomOut}
+                size="icon"
+                title="Zoom out"
+                variant="ghost"
+              >
+                <Minus />
+              </Button>
+            </div>
           </div>
         </Panel>
         <Background
