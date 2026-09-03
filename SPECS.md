@@ -11,6 +11,7 @@
 <area name="Foundation">
 - The project uses Bun.
 - The project includes Storybook, shadcn, and React Flow.
+- Keyboard shortcut handling uses `@tanstack/react-hotkeys`.
 - The app page is a full-screen React Flow canvas.
 - The project can run locally with `make dev`, which uses Bun.
 - Visual Thinker is deployed through a Cloudflare Pages project in the PlaygrndLabs Cloudflare account at `https://visual-thinker.pages.dev/`.
@@ -51,6 +52,11 @@
 - Holding Space while dragging pans the canvas.
 - Holding Shift while clicking nodes adds them to the selection.
 - Backspace or Delete removes selected nodes or edges.
+- Canvas changes can be undone with Ctrl+Z or Command+Z.
+- Canvas changes can be redone with Ctrl+Shift+Z, Ctrl+Y, Command+Shift+Z, or Command+Y.
+- Creating, connecting, deleting, clearing, moving, and editing ideas are undoable canvas changes.
+- Each completed node drag and idea-text editing session is one undoable change rather than a sequence of intermediate changes.
+- Selection, viewport movement, and transient focus behavior are not canvas history entries.
 </interactivity>
 
 <area name="Logo">

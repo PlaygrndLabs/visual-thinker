@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useHotkeys } from '@tanstack/react-hotkeys'
 import {
   addEdge,
   applyEdgeChanges,
@@ -15,12 +16,14 @@ import { Maximize, Minus, Plus } from 'lucide-react'
 import { CanvasFloatingButton } from '@/components/canvas-floating-button'
 import { IdeaNode } from '@/components/idea-node'
 import { Logotype } from '@/components/logotype'
+import { CanvasHistoryProvider } from '@/contexts/canvas-history-context'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
+import { useCanvasHistory } from '@/hooks/use-canvas-history'
 
 const nodeTypes = { idea: IdeaNode }
 const canvasStorageKey = 'visual-thinker.canvas.v1'
@@ -47,7 +50,15 @@ function loadCanvas() {
 }
 
 function ThinkingCanvas() {
-  const [canvas, setCanvas] = useState(loadCanvas)
+  const {
+    beginTransaction,
+    canvas,
+    commitTransaction,
+    redo,
+    setCanvas,
+    undo,
+    updateCanvas,
+  } = useCanvasHistory(loadCanvas)
   const [isFitViewActive, setIsFitViewActive] = useState(false)
   const savedViewport = useRef(null)
   const {
@@ -70,7 +81,7 @@ function ThinkingCanvas() {
   const createIdea = useCallback((position) => {
     const id = `idea-${crypto.randomUUID()}`
 
-    setCanvas((currentCanvas) => ({
+    updateCanvas((currentCanvas) => ({
       ...currentCanvas,
       nodes: [
         ...currentCanvas.nodes,
@@ -82,7 +93,7 @@ function ThinkingCanvas() {
         },
       ],
     }))
-  }, [])
+  }, [updateCanvas])
 
   const createIdeaAtScreenPoint = useCallback(
     ({ x, y }) => {
@@ -106,7 +117,7 @@ function ThinkingCanvas() {
         ...currentCanvas,
         nodes: applyNodeChanges(changes, currentCanvas.nodes),
       })),
-    [],
+    [setCanvas],
   )
 
   const onEdgesChange = useCallback(
@@ -115,19 +126,19 @@ function ThinkingCanvas() {
         ...currentCanvas,
         edges: applyEdgeChanges(changes, currentCanvas.edges),
       })),
-    [],
+    [setCanvas],
   )
 
   const onConnect = useCallback(
     (connection) =>
-      setCanvas((currentCanvas) => ({
+      updateCanvas((currentCanvas) => ({
         ...currentCanvas,
         edges: addEdge(
           { ...connection, type: 'smoothstep' },
           currentCanvas.edges,
         ),
       })),
-    [],
+    [updateCanvas],
   )
 
   const onSelectionChange = useCallback(({ nodes: selectedNodes }) => {
@@ -152,8 +163,17 @@ function ThinkingCanvas() {
   const clearCanvas = useCallback(() => {
     savedViewport.current = null
     setIsFitViewActive(false)
-    setCanvas(emptyCanvas)
-  }, [])
+    updateCanvas(emptyCanvas)
+  }, [updateCanvas])
+
+  useHotkeys(
+    [
+      { hotkey: 'Mod+Z', callback: undo },
+      { hotkey: 'Mod+Shift+Z', callback: redo },
+      { hotkey: 'Mod+Y', callback: redo },
+    ],
+    { ignoreInputs: true },
+  )
 
   const toggleFitView = useCallback(async () => {
     if (isFitViewActive) {
@@ -170,112 +190,121 @@ function ThinkingCanvas() {
   }, [fitView, getViewport, isFitViewActive, setViewport])
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger className="h-screen w-screen bg-background">
-        <main className="h-full w-full">
-          <ReactFlow
-            nodes={canvas.nodes}
-            edges={canvas.edges}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onSelectionChange={onSelectionChange}
-            onMoveStart={(event) => {
-              if (event) setIsFitViewActive(false)
-            }}
-            onPaneClick={onPaneClick}
-            connectionRadius={28}
-            defaultEdgeOptions={{
-              type: 'smoothstep',
-              style: { stroke: 'var(--primary)', strokeWidth: 2 },
-            }}
-            deleteKeyCode={['Backspace', 'Delete']}
-            multiSelectionKeyCode="Shift"
-            panOnDrag={[1]}
-            panActivationKeyCode="Space"
-            panOnScroll={false}
-            paneClickDistance={3}
-            selectionOnDrag
-            className={canvasSelectionStyles}
-            minZoom={0.2}
-            maxZoom={2.4}
-            proOptions={{ hideAttribution: true }}
-            zoomOnDoubleClick={false}
-            zoomOnPinch={false}
-            zoomOnScroll
-          >
-            <Panel position="top-left" className="m-5">
-              <Logotype />
-            </Panel>
-            <Panel
-              position="bottom-center"
-              className="m-5 whitespace-nowrap text-xs text-muted-foreground"
+    <CanvasHistoryProvider value={{ beginTransaction, commitTransaction }}>
+      <ContextMenu>
+        <ContextMenuTrigger className="h-screen w-screen bg-background">
+          <main className="h-full w-full">
+            <ReactFlow
+              nodes={canvas.nodes}
+              edges={canvas.edges}
+              nodeTypes={nodeTypes}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onBeforeDelete={async () => {
+                beginTransaction()
+                return true
+              }}
+              onDelete={commitTransaction}
+              onNodeDragStart={beginTransaction}
+              onNodeDragStop={commitTransaction}
+              onSelectionChange={onSelectionChange}
+              onMoveStart={(event) => {
+                if (event) setIsFitViewActive(false)
+              }}
+              onPaneClick={onPaneClick}
+              connectionRadius={28}
+              defaultEdgeOptions={{
+                type: 'smoothstep',
+                style: { stroke: 'var(--primary)', strokeWidth: 2 },
+              }}
+              deleteKeyCode={['Backspace', 'Delete']}
+              multiSelectionKeyCode="Shift"
+              panOnDrag={[1]}
+              panActivationKeyCode="Space"
+              panOnScroll={false}
+              paneClickDistance={3}
+              selectionOnDrag
+              className={canvasSelectionStyles}
+              minZoom={0.2}
+              maxZoom={2.4}
+              proOptions={{ hideAttribution: true }}
+              zoomOnDoubleClick={false}
+              zoomOnPinch={false}
+              zoomOnScroll
             >
-              <kbd className="font-sans">Space</kbd> + drag or middle-drag to
-              pan
-              <span className="mx-2 text-border">·</span>
-              Scroll to zoom
-            </Panel>
-            <Panel position="bottom-right" className="m-5 -translate-y-4">
-              <div className="flex flex-col items-center gap-2">
-                <CanvasFloatingButton
-                  aria-label={
-                    isFitViewActive
-                      ? 'Restore previous view'
-                      : 'Fit all content'
-                  }
-                  aria-pressed={isFitViewActive}
-                  disabled={canvas.nodes.length === 0}
-                  onClick={toggleFitView}
-                  title={
-                    isFitViewActive
-                      ? 'Restore previous view'
-                      : 'Fit all content'
-                  }
-                >
-                  <Maximize />
-                </CanvasFloatingButton>
-                <div className="flex flex-col overflow-hidden rounded-sm border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm">
+              <Panel position="top-left" className="m-5">
+                <Logotype />
+              </Panel>
+              <Panel
+                position="bottom-center"
+                className="m-5 whitespace-nowrap text-xs text-muted-foreground"
+              >
+                <kbd className="font-sans">Space</kbd> + drag or middle-drag
+                to pan
+                <span className="mx-2 text-border">·</span>
+                Scroll to zoom
+              </Panel>
+              <Panel position="bottom-right" className="m-5 -translate-y-4">
+                <div className="flex flex-col items-center gap-2">
                   <CanvasFloatingButton
-                    aria-label="Zoom in"
-                    className="border-b"
-                    grouped
-                    onClick={handleZoomIn}
-                    title="Zoom in"
+                    aria-label={
+                      isFitViewActive
+                        ? 'Restore previous view'
+                        : 'Fit all content'
+                    }
+                    aria-pressed={isFitViewActive}
+                    disabled={canvas.nodes.length === 0}
+                    onClick={toggleFitView}
+                    title={
+                      isFitViewActive
+                        ? 'Restore previous view'
+                        : 'Fit all content'
+                    }
                   >
-                    <Plus />
+                    <Maximize />
                   </CanvasFloatingButton>
-                  <CanvasFloatingButton
-                    aria-label="Zoom out"
-                    grouped
-                    onClick={handleZoomOut}
-                    title="Zoom out"
-                  >
-                    <Minus />
-                  </CanvasFloatingButton>
+                  <div className="flex flex-col overflow-hidden rounded-sm border bg-background/95 shadow-[0_6px_18px_oklch(0.25_0.03_260/0.1)] backdrop-blur-sm">
+                    <CanvasFloatingButton
+                      aria-label="Zoom in"
+                      className="border-b"
+                      grouped
+                      onClick={handleZoomIn}
+                      title="Zoom in"
+                    >
+                      <Plus />
+                    </CanvasFloatingButton>
+                    <CanvasFloatingButton
+                      aria-label="Zoom out"
+                      grouped
+                      onClick={handleZoomOut}
+                      title="Zoom out"
+                    >
+                      <Minus />
+                    </CanvasFloatingButton>
+                  </div>
                 </div>
-              </div>
-            </Panel>
-            <Background
-              variant={BackgroundVariant.Dots}
-              gap={24}
-              size={1.25}
-              color="var(--canvas-dot)"
-            />
-          </ReactFlow>
-        </main>
-      </ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem
-          disabled={canvas.nodes.length === 0 && canvas.edges.length === 0}
-          variant="destructive"
-          onClick={clearCanvas}
-        >
-          Clear
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+              </Panel>
+              <Background
+                variant={BackgroundVariant.Dots}
+                gap={24}
+                size={1.25}
+                color="var(--canvas-dot)"
+              />
+            </ReactFlow>
+          </main>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
+            disabled={canvas.nodes.length === 0 && canvas.edges.length === 0}
+            variant="destructive"
+            onClick={clearCanvas}
+          >
+            Clear
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+    </CanvasHistoryProvider>
   )
 }
 

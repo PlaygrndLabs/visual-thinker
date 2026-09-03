@@ -1,9 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { Handle, Position, useReactFlow } from '@xyflow/react'
 
+import { useCanvasHistoryTransaction } from '@/contexts/canvas-history-context'
+
 export function IdeaNode({ id, data, selected }) {
   const inputRef = useRef(null)
   const { updateNodeData } = useReactFlow()
+  const { beginTransaction, commitTransaction } =
+    useCanvasHistoryTransaction()
 
   useEffect(() => {
     if (!data.autofocus) return
@@ -32,7 +36,9 @@ export function IdeaNode({ id, data, selected }) {
         ref={inputRef}
         className="nodrag nowheel block w-full bg-transparent text-sm font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
         value={data.label}
+        onBlur={commitTransaction}
         onChange={(event) => updateNodeData(id, { label: event.target.value })}
+        onFocus={beginTransaction}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === 'Escape') {
             event.currentTarget.blur()
