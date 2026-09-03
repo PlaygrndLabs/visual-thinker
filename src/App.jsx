@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useHotkeys } from '@tanstack/react-hotkeys'
 import {
   addEdge,
@@ -36,20 +36,6 @@ const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_selection]:[--xy-selection-border:1px_solid_#316ac5]
 `
 
-function loadCanvas() {
-  try {
-    const savedCanvas = JSON.parse(localStorage.getItem(canvasStorageKey))
-
-    if (Array.isArray(savedCanvas?.nodes) && Array.isArray(savedCanvas?.edges)) {
-      return { nodes: savedCanvas.nodes, edges: savedCanvas.edges }
-    }
-  } catch {
-    // Start with an empty canvas when saved data is missing or unreadable.
-  }
-
-  return emptyCanvas
-}
-
 function ThinkingCanvas() {
   const {
     beginTransaction,
@@ -59,7 +45,7 @@ function ThinkingCanvas() {
     setCanvas,
     undo,
     updateCanvas,
-  } = useCanvasHistory(loadCanvas)
+  } = useCanvasHistory(canvasStorageKey, emptyCanvas)
   const [isFitViewActive, setIsFitViewActive] = useState(false)
   const savedViewport = useRef(null)
   const {
@@ -75,14 +61,6 @@ function ThinkingCanvas() {
     screenToFlowPosition,
     updateCanvas,
   )
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(canvasStorageKey, JSON.stringify(canvas))
-    } catch {
-      // Keep the in-memory canvas usable if browser storage is unavailable.
-    }
-  }, [canvas])
 
   const createIdea = useCallback((position) => {
     const id = `idea-${crypto.randomUUID()}`

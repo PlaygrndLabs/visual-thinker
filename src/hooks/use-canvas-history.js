@@ -1,4 +1,6 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef } from 'react'
+
+import { useLocalStorageState } from '@/hooks/use-local-storage-state'
 
 const historyLimit = 100
 
@@ -23,8 +25,11 @@ function snapshotsMatch(first, second) {
   return JSON.stringify(first) === JSON.stringify(second)
 }
 
-export function useCanvasHistory(initialCanvas) {
-  const [canvas, setCanvasState] = useState(initialCanvas)
+export function useCanvasHistory(storageKey, initialCanvas) {
+  const [canvas, setCanvasState] = useLocalStorageState(
+    storageKey,
+    initialCanvas,
+  )
   const canvasRef = useRef(canvas)
   const pastRef = useRef([])
   const futureRef = useRef([])
@@ -36,7 +41,7 @@ export function useCanvasHistory(initialCanvas) {
 
     canvasRef.current = nextCanvas
     setCanvasState(nextCanvas)
-  }, [])
+  }, [setCanvasState])
 
   const remember = useCallback((snapshot) => {
     pastRef.current = [...pastRef.current, snapshot].slice(-historyLimit)
@@ -57,7 +62,7 @@ export function useCanvasHistory(initialCanvas) {
       canvasRef.current = nextCanvas
       setCanvasState(nextCanvas)
     },
-    [remember],
+    [remember, setCanvasState],
   )
 
   const beginTransaction = useCallback(() => {
@@ -88,7 +93,7 @@ export function useCanvasHistory(initialCanvas) {
     transactionStartRef.current = null
     canvasRef.current = previousCanvas
     setCanvasState(previousCanvas)
-  }, [])
+  }, [setCanvasState])
 
   const redo = useCallback(() => {
     const nextCanvas = futureRef.current[0]
@@ -102,7 +107,7 @@ export function useCanvasHistory(initialCanvas) {
     transactionStartRef.current = null
     canvasRef.current = nextCanvas
     setCanvasState(nextCanvas)
-  }, [])
+  }, [setCanvasState])
 
   return {
     beginTransaction,
