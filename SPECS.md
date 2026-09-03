@@ -31,6 +31,7 @@
 - React Flow attribution is not shown.
 - The “Space + drag or middle-drag to pan · Scroll to zoom” hint is muted small text without a box style and sits in the middle of the bottom edge.
 - Compact Google Maps-style controls at the bottom right provide zoom-in, zoom-out, and fit-all actions. Zoom-in and zoom-out form a joined vertical group; fit-all is a standalone control above them.
+- The standalone fit-all control uses the same border treatment as the grouped zoom controls.
 - The fit-all control toggles between fitting all canvas content into view and restoring the user’s previously chosen pan and zoom.
 </area>
 </specs>
