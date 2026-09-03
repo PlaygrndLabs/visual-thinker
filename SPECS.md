@@ -54,7 +54,11 @@
 - Backspace or Delete removes selected nodes or edges.
 - Canvas changes can be undone with Ctrl+Z or Command+Z.
 - Canvas changes can be redone with Ctrl+Shift+Z, Ctrl+Y, Command+Shift+Z, or Command+Y.
+- Selected canvas items can be copied with Ctrl+C or Command+C, pasted with Ctrl+V or Command+V, and cut with Ctrl+X or Command+X.
+- Copying nodes includes the connections between copied nodes; pasted items receive new identities, appear offset from their originals, and become the current selection.
+- Canvas clipboard shortcuts do not replace native text-editing clipboard behavior while an idea text field has focus.
 - Creating, connecting, deleting, clearing, moving, and editing ideas are undoable canvas changes.
+- Cutting and pasting canvas items are undoable canvas changes; copying them is not a canvas change.
 - Each completed node drag and idea-text editing session is one undoable change rather than a sequence of intermediate changes.
 - Selection, viewport movement, and transient focus behavior are not canvas history entries.
 </interactivity>

@@ -24,6 +24,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import { useCanvasHistory } from '@/hooks/use-canvas-history'
+import { useCanvasClipboard } from '@/hooks/use-canvas-clipboard'
 
 const nodeTypes = { idea: IdeaNode }
 const canvasStorageKey = 'visual-thinker.canvas.v1'
@@ -61,6 +62,10 @@ function ThinkingCanvas() {
   } = useCanvasHistory(loadCanvas)
   const [isFitViewActive, setIsFitViewActive] = useState(false)
   const savedViewport = useRef(null)
+  const { copySelection, cutSelection, pasteSelection } = useCanvasClipboard(
+    canvas,
+    updateCanvas,
+  )
   const {
     fitView,
     getViewport,
@@ -171,6 +176,9 @@ function ThinkingCanvas() {
       { hotkey: 'Mod+Z', callback: undo },
       { hotkey: 'Mod+Shift+Z', callback: redo },
       { hotkey: 'Mod+Y', callback: redo },
+      { hotkey: 'Mod+C', callback: copySelection },
+      { hotkey: 'Mod+V', callback: pasteSelection },
+      { hotkey: 'Mod+X', callback: cutSelection },
     ],
     { ignoreInputs: true },
   )
