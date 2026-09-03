@@ -3,6 +3,7 @@ Visual Thinker is a visual playground for thinking, reasoning, and pure thinking
 .md files that AI writes & reads are plain-text context for AI, not documents that need one fixed format. Use XML for semantic structure and Markdown for content within that structure. Keep meaningful containers; avoid unnecessary leaf tags. Plain text can remain wherever neither adds clarity.
 
 - `SPECS.md` is the durable definition of what the project has to be and do. Collect every user prompt that counts as spec there.
+- In `SPECS.md`, nest each area inside the area that contains it.
 - A spec cannot stay verbatim when the prompt is a directive or request to change something. Convert it to spec-definition language, but keep the user's wording, don't paraphrase too much, and stay faithful to what they typed.
 - Specs must be stateless and absolute: each spec must define the intended target independently of the implementation's current or previous state and must remain meaningful and correct as the implementation changes.
 - Do not preserve relative statements such as “the current size is right,” “keep it as is,” or “it remains unchanged” as specs. Convert them to an explicit absolute requirement only when the intended requirement is known; otherwise remove or omit them until it is clarified.

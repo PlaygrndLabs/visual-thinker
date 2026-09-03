@@ -25,14 +25,23 @@
 - Space + drag or middle-click + drag pans the canvas.
 </area>
 
-<area name="Canvas chrome">
+<area name="Canvas">
+- React Flow attribution is not shown.
+
+<area name="Logo">
 - A floating “Visual Thinker” label gives the app its own unique identity with minimal branding; it sits at the top left in a narrow, chic/classy serif font.
 - The logotype uses open, airy letter spacing rather than tight tracking.
 - The logotype is implemented as a dedicated component.
-- React Flow attribution is not shown.
-- The “Space + drag or middle-drag to pan · Scroll to zoom” hint is muted small text without a box style and sits in the middle of the bottom edge.
+</area>
+
+<area name="Controls">
 - Compact Google Maps-style controls at the bottom right provide zoom-in, zoom-out, and fit-all actions. Zoom-in and zoom-out form a joined vertical group; fit-all is a standalone control above them.
 - The standalone fit-all control uses the same border treatment as the grouped zoom controls.
 - The fit-all control toggles between fitting all canvas content into view and restoring the user’s previously chosen pan and zoom.
+</area>
+
+<area name="Instructions">
+- The “Space + drag or middle-drag to pan · Scroll to zoom” hint is muted small text without a box style and sits in the middle of the bottom edge.
+</area>
 </area>
 </specs>
