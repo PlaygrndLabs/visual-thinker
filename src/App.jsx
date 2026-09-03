@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   addEdge,
   applyEdgeChanges,
@@ -17,6 +17,8 @@ import { IdeaNode } from '@/components/idea-node'
 import { Logotype } from '@/components/logotype'
 
 const nodeTypes = { idea: IdeaNode }
+const canvasStorageKey = 'visual-thinker.canvas.v1'
+const emptyCanvas = { nodes: [], edges: [] }
 const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-background-color:transparent]
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-border:none]
@@ -24,11 +26,23 @@ const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_selection]:[--xy-selection-border:1px_solid_#316ac5]
 `
 
+function loadCanvas() {
+  try {
+    const savedCanvas = JSON.parse(localStorage.getItem(canvasStorageKey))
+
+    if (Array.isArray(savedCanvas?.nodes) && Array.isArray(savedCanvas?.edges)) {
+      return { nodes: savedCanvas.nodes, edges: savedCanvas.edges }
+    }
+  } catch {
+    // Start with an empty canvas when saved data is missing or unreadable.
+  }
+
+  return emptyCanvas
+}
+
 function ThinkingCanvas() {
-  const [nodes, setNodes] = useState([])
-  const [edges, setEdges] = useState([])
+  const [canvas, setCanvas] = useState(loadCanvas)
   const [isFitViewActive, setIsFitViewActive] = useState(false)
-  const nextNodeId = useRef(1)
   const savedViewport = useRef(null)
   const {
     fitView,
@@ -39,18 +53,29 @@ function ThinkingCanvas() {
     zoomOut,
   } = useReactFlow()
 
-  const createIdea = useCallback((position) => {
-    const id = `idea-${nextNodeId.current++}`
+  useEffect(() => {
+    try {
+      localStorage.setItem(canvasStorageKey, JSON.stringify(canvas))
+    } catch {
+      // Keep the in-memory canvas usable if browser storage is unavailable.
+    }
+  }, [canvas])
 
-    setNodes((currentNodes) => [
-      ...currentNodes,
-      {
-        id,
-        type: 'idea',
-        position,
-        data: { label: 'New idea', autofocus: true },
-      },
-    ])
+  const createIdea = useCallback((position) => {
+    const id = `idea-${crypto.randomUUID()}`
+
+    setCanvas((currentCanvas) => ({
+      ...currentCanvas,
+      nodes: [
+        ...currentCanvas.nodes,
+        {
+          id,
+          type: 'idea',
+          position,
+          data: { label: 'New idea', autofocus: true },
+        },
+      ],
+    }))
   }, [])
 
   const createIdeaAtScreenPoint = useCallback(
@@ -70,20 +95,32 @@ function ThinkingCanvas() {
   )
 
   const onNodesChange = useCallback(
-    (changes) => setNodes((currentNodes) => applyNodeChanges(changes, currentNodes)),
+    (changes) =>
+      setCanvas((currentCanvas) => ({
+        ...currentCanvas,
+        nodes: applyNodeChanges(changes, currentCanvas.nodes),
+      })),
     [],
   )
 
   const onEdgesChange = useCallback(
-    (changes) => setEdges((currentEdges) => applyEdgeChanges(changes, currentEdges)),
+    (changes) =>
+      setCanvas((currentCanvas) => ({
+        ...currentCanvas,
+        edges: applyEdgeChanges(changes, currentCanvas.edges),
+      })),
     [],
   )
 
   const onConnect = useCallback(
     (connection) =>
-      setEdges((currentEdges) =>
-        addEdge({ ...connection, type: 'smoothstep' }, currentEdges),
-      ),
+      setCanvas((currentCanvas) => ({
+        ...currentCanvas,
+        edges: addEdge(
+          { ...connection, type: 'smoothstep' },
+          currentCanvas.edges,
+        ),
+      })),
     [],
   )
 
@@ -123,8 +160,8 @@ function ThinkingCanvas() {
   return (
     <main className="h-screen w-screen bg-background">
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={canvas.nodes}
+        edges={canvas.edges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -172,7 +209,7 @@ function ThinkingCanvas() {
                 isFitViewActive ? 'Restore previous view' : 'Fit all content'
               }
               aria-pressed={isFitViewActive}
-              disabled={nodes.length === 0}
+              disabled={canvas.nodes.length === 0}
               onClick={toggleFitView}
               title={
                 isFitViewActive ? 'Restore previous view' : 'Fit all content'

@@ -27,6 +27,11 @@
 <area name="Canvas">
 - React Flow attribution is not shown.
 
+<area name="State and persistence">
+- All contents of the canvas come from a single state variable.
+- Canvas contents are stored in browser localStorage, saved after each change, and loaded on page load.
+</area>
+
 <interactivity>
 ### Mouse
 
