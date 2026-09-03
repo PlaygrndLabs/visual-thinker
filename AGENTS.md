@@ -1,6 +1,6 @@
 Visual Thinker is a visual playground for thinking, reasoning, and pure thinking-based discovery. Build it as an immediate, spacious working surface where ideas can be created, connected, rearranged, and explored with minimal friction.
 
-.md files that AI writes & reads are not real MD, they are plain text storage for AI prompts. don't follow MD formatting/hierarchy too much
+.md files that AI writes & reads are not real MD; they are plain text storage for AI prompts. Prefer human-readable XML over Markdown formatting and hierarchy.
 
 - `SPECS.md` is the durable definition of what the project has to be and do. Collect every user prompt that counts as spec there.
 - A spec cannot stay verbatim when the prompt is a directive or request to change something. Convert it to spec-definition language, but keep the user's wording, don't paraphrase too much, and stay faithful to what they typed.
