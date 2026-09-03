@@ -11,6 +11,6 @@ Visual Thinker is a visual playground for thinking, reasoning, and pure thinking
 - Keep the primary experience focused on the full-screen visual thinking canvas.
 - Prefer direct manipulation, fast keyboard and mouse interactions, and quiet interface chrome.
 - Make one commit per feature or distinct setup step.
-- Put the full verbatim portion of the user's prompt relevant to that feature or setup step in the commit description/body.
+- In each commit body, include a chronological bullet list of all relevant user prompts or excerpts. Keep them faithful, allowing up to ~10% editing to remove non-constructive wording or redundancies and to resolve references using wording from earlier prompts, so the entries connect and remain self-contained. Omit unrelated and automatically supplied context.
 - Do not combine unrelated features in one commit.
 - Keep commits in a working, buildable state whenever practical.
