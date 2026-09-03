@@ -164,8 +164,17 @@ function ThinkingCanvas() {
     updateCanvas(emptyCanvas)
   }, [updateCanvas])
 
+  const selectAllNodes = useCallback(() => {
+    setCanvas((currentCanvas) => ({
+      ...currentCanvas,
+      nodes: currentCanvas.nodes.map((node) => ({ ...node, selected: true })),
+      edges: currentCanvas.edges.map((edge) => ({ ...edge, selected: false })),
+    }))
+  }, [setCanvas])
+
   useHotkeys(
     [
+      { hotkey: 'Mod+A', callback: selectAllNodes },
       { hotkey: 'Mod+Z', callback: undo },
       { hotkey: 'Mod+Shift+Z', callback: redo },
       { hotkey: 'Mod+Y', callback: redo },
