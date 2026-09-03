@@ -100,7 +100,7 @@ function ThinkingCanvas() {
           <Logotype />
         </Panel>
         <Panel
-          position="bottom-right"
+          position="bottom-center"
           className="m-5 text-xs text-muted-foreground"
         >
           <kbd className="font-sans">Space</kbd> + drag or middle-drag to pan

@@ -29,6 +29,6 @@
 - A floating “Visual Thinker” label gives the app its own unique identity with minimal branding; it sits at the top left in a narrow, chic/classy serif font that is neither too large nor too small.
 - The logotype’s current size is right, and the logotype is implemented as a dedicated component.
 - React Flow attribution is not shown.
-- The “Space + drag or middle-drag to pan · Scroll to zoom” hint remains as muted small text without a box style.
+- The “Space + drag or middle-drag to pan · Scroll to zoom” hint remains as muted small text without a box style and sits in the middle of the bottom edge.
 </area>
 </specs>
