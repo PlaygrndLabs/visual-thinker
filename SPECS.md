@@ -37,6 +37,7 @@
 <area name="Controls">
 - Compact Google Maps-style controls at the bottom right provide zoom-in, zoom-out, and fit-all actions. Zoom-in and zoom-out form a joined vertical group; fit-all is a standalone control above them.
 - The standalone fit-all control uses the same border treatment as the grouped zoom controls.
+- Viewport controls keep neutral coloring and remain visually stationary when pressed.
 - The fit-all control toggles between fitting all canvas content into view and restoring the user’s previously chosen pan and zoom.
 </area>
 
