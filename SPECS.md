@@ -26,7 +26,8 @@
 </area>
 
 <area name="Canvas chrome">
-- The top-left “Visual Thinker / Click the canvas to capture a thought” panel and its add button are not shown.
+- The top-left “Visual Thinker / Click the canvas to capture a thought” informational panel and its add button are not shown.
+- A floating “Visual Thinker” label gives the app its own unique identity with minimal branding; it sits at the top left in a narrow, chic/classy serif font that is neither too large nor too small.
 - React Flow attribution is not shown.
 - The “Space + drag or middle-drag to pan · Scroll to zoom” hint remains as muted small text without a box style.
 </area>

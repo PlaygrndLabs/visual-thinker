@@ -95,6 +95,11 @@ function ThinkingCanvas() {
         zoomOnPinch={false}
         zoomOnScroll
       >
+        <Panel position="top-left" className="m-5">
+          <h1 className="wordmark" aria-label="Visual Thinker">
+            Visual Thinker
+          </h1>
+        </Panel>
         <Panel
           position="bottom-right"
           className="m-5 text-xs text-muted-foreground"
