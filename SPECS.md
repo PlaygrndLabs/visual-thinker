@@ -14,6 +14,7 @@
 - The app page is a full-screen React Flow canvas.
 - The project can run locally with `make dev`, which uses Bun.
 - The project is configured for deployment to Cloudflare Pages with Wrangler using the PlaygrndLabs Cloudflare account.
+- Every push to `main` builds the latest source with Bun and deploys it to `https://visual-thinker.pages.dev/` with Wrangler through GitHub Actions, providing the push-to-deploy behavior of a repository-connected Cloudflare Pages project.
 </area>
 
 <area name="Basic brainstorm diagramming">
