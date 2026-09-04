@@ -31,6 +31,7 @@
 <area name="Basic brainstorm diagramming">
 - The canvas has interactive mouse- and keyboard-based basic brainstorm diagramming tools.
 - Idea nodes support multiline text, fit their text content in both dimensions, retain a small minimum width of 6rem, show at most five text lines at once, and scroll vertically for additional lines.
+- Every idea node exposes its text through an accessible multiline text field.
 - A new connection starts by dragging from a handle on a node edge, but its dragged end can be released anywhere inside another node without targeting a handle.
 - While the dragged end of a new connection is inside a node or within its connection-snapping radius, it snaps to the same destination-node edge selected by automatic connection routing for the completed connection: the edge nearest the source node, independently of the pointer's location or the physical handle nearest the pointer.
 - Connections have no input or output direction: the top, right, bottom, and left handles on every idea node have equal meaning and can each start or end a connection.
@@ -87,7 +88,10 @@
 - The selection rectangle has the translucent blue fill and crisp, solid blue outline associated with the Windows XP Explorer and desktop selection rectangle; its border is not dotted or dashed.
 - Starting a selection-rectangle drag requests the pan tip through `maySuggestTip`.
 - After a rectangle selection is completed, selected nodes keep their individual selected-state highlighting without a shared rectangle bounding the selection.
-- A single clicked node is selected by itself and its text box receives focus for editing.
+- A single clicked node is selected by itself without entering text-editing mode.
+- Double-clicking an idea node enters text-editing mode and focuses its text field.
+- Outside text-editing mode, a primary-button drag that starts anywhere on an idea node, including over its text, moves the node instead of selecting text.
+- In text-editing mode, the idea text field supports normal caret placement and text selection.
 - When multiple nodes are selected, their text boxes do not have editing focus.
 - A desktop wheel gesture that reports any nonzero horizontal delta is treated as trackpad-like input and pans the canvas in both directions for the rest of that gesture.
 - A desktop wheel gesture that reports only vertical delta zooms the canvas in and out.
