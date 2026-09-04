@@ -81,6 +81,19 @@
 </area>
 </area>
 
+<area name="WebMCP">
+- Visual Thinker exposes its canvas to browser agents through the native imperative WebMCP API without adding agent-specific interface chrome.
+- The WebMCP tool surface consists of `inspect_canvas`, `create_ideas`, `update_ideas`, `connect_ideas`, `disconnect_ideas`, and `delete_ideas`.
+- `inspect_canvas` provides paginated idea and connection records, canvas totals, and the visible canvas-coordinate bounds without exposing transient React Flow state or internal connection IDs.
+- WebMCP canvas mutations accept batches, validate the entire request before changing state, and apply each batch through the same canvas history and persistence path as human interactions so it is one undoable change.
+- WebMCP-created ideas require non-empty text and explicit finite absolute canvas coordinates.
+- WebMCP connection operations preserve the canvas's undirected, one-connection-per-idea-pair invariant.
+- WebMCP tools can update idea text and positions, disconnect idea pairs, and delete ideas with their incident connections.
+- WebMCP mutations preserve the user's pan and zoom.
+- Browsers without the WebMCP API retain the complete human interface without errors or reduced functionality.
+- `inspect_canvas` is declared read-only and marks its user-authored canvas text as untrusted content; canvas mutations are declared non-consequential because they are local and undoable.
+</area>
+
 <interactivity>
 ### Mouse
 

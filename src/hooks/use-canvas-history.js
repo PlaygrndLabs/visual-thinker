@@ -44,6 +44,8 @@ export function useCanvasHistory(storageKey, initialCanvas, schema) {
     setCanvasState(nextCanvas)
   }, [setCanvasState])
 
+  const getCanvas = useCallback(() => canvasRef.current, [])
+
   const remember = useCallback((snapshot) => {
     pastRef.current = [...pastRef.current, snapshot].slice(-historyLimit)
     futureRef.current = []
@@ -114,6 +116,7 @@ export function useCanvasHistory(storageKey, initialCanvas, schema) {
     beginTransaction,
     canvas,
     commitTransaction,
+    getCanvas,
     redo,
     setCanvas,
     undo,

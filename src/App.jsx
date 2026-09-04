@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/context-menu'
 import { useCanvasHistory } from '@/hooks/use-canvas-history'
 import { useCanvasClipboard } from '@/hooks/use-canvas-clipboard'
+import { useWebMCPTools } from '@/hooks/use-webmcp-tools'
 import {
   experienceTips,
   knownExperiences,
@@ -37,6 +38,10 @@ import {
 } from '@/hooks/use-experiences'
 import { useLocalStorageState } from '@/hooks/use-local-storage-state'
 import { useWheelIntent } from '@/hooks/use-wheel-intent'
+import {
+  canConnectNodes,
+  getUniqueEdges,
+} from '@/lib/canvas-connections'
 import { getAutomaticHandles } from '@/lib/connection-routing'
 import {
   canvasSchema,
@@ -111,29 +116,6 @@ function clicksBelongToSameSequence(firstClick, nextClick) {
   )
 }
 
-function getConnectionPairKey({ source, target }) {
-  return JSON.stringify(source < target ? [source, target] : [target, source])
-}
-
-function getUniqueEdges(edges) {
-  const seenPairs = new Set()
-
-  return edges.filter((edge) => {
-    const pairKey = getConnectionPairKey(edge)
-    if (seenPairs.has(pairKey)) return false
-
-    seenPairs.add(pairKey)
-    return true
-  })
-}
-
-function canConnectNodes(edges, { source, target }) {
-  if (!source || !target || source === target) return false
-
-  const pairKey = getConnectionPairKey({ source, target })
-  return !edges.some((edge) => getConnectionPairKey(edge) === pairKey)
-}
-
 function isNewIdeaMostlyVisible({ x, y }, canvasBounds, zoom) {
   const nodeBounds = {
     left: x + newNodePointerOffset,
@@ -163,6 +145,7 @@ function ThinkingCanvas() {
     beginTransaction,
     canvas,
     commitTransaction,
+    getCanvas,
     redo,
     setCanvas,
     undo,
@@ -226,6 +209,7 @@ function ThinkingCanvas() {
     hasInternalClipboard,
     pasteSelection,
   } = useCanvasClipboard(canvas, screenToFlowPosition, updateCanvas)
+  useWebMCPTools({ getCanvas, screenToFlowPosition, updateCanvas })
   const routedEdges = useMemo(() => {
     const nodesById = new Map(canvas.nodes.map((node) => [node.id, node]))
 
