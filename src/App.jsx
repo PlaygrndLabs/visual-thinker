@@ -368,9 +368,18 @@ function ThinkingCanvas() {
     ],
   )
 
-  const onEdgeDoubleClick = useCallback((event) => {
-    event.stopPropagation()
-  }, [])
+  const onEdgeDoubleClick = useCallback(
+    (event, edge) => {
+      event.stopPropagation()
+      updateCanvas((currentCanvas) => ({
+        ...currentCanvas,
+        edges: currentCanvas.edges.filter(
+          (currentEdge) => currentEdge.id !== edge.id,
+        ),
+      }))
+    },
+    [updateCanvas],
+  )
 
   useEffect(
     () => () => clearTimeout(pendingPaneClick.current),
