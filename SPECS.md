@@ -32,6 +32,7 @@
 - The GitHub repository is public.
 - The GitHub repository About section describes Visual Thinker as a spacious visual playground for creating, connecting, rearranging, and exploring ideas, and links to `https://visual-thinker.pages.dev/`.
 - The project is open source under a root-level MIT license file that GitHub detects and displays at the top of the repository page in the About section.
+- The `README.md` tagline is “a neural network inspired visual brainstorming and discovery tool for your agents to drive and you to tweak”.
 - `README.md` is a polished, representative introduction to Visual Thinker that communicates its purpose and interaction model, prominently links to the live app, visually represents the product, and provides accurate local-development, build, deployment, and contribution guidance.
 </area>
 
