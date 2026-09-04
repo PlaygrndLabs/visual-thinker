@@ -90,7 +90,7 @@ Each v1 experience record contains:
 
 Evidence counters are bounded. The app does not store every use timestamp or an unlimited lifetime count.
 
-The context-menu `Clear` action resets the canvas, viewport, logo, and transient tip without changing experience tracks. `Full reset` clears every localStorage value for the origin, including every current or older experience version, and reloads the app into clean defaults.
+The context-menu `Clear` action resets the canvas, viewport, logo, and transient tip without changing experience tracks. In local Vite development only, `Full reset` clears every localStorage value for the origin, including every current or older experience version, and reloads the app into clean defaults. Production builds, including Cloudflare Pages production and preview deployments, do not render the action or register its keyboard shortcut.
 
 </storage>
 

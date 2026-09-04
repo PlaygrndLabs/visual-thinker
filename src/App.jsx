@@ -51,6 +51,7 @@ const multiClickMaxOffset = 5
 const newNodePointerOffset = 12
 const newIdeaNodeSize = { width: 96, height: 38 }
 const completedPanDistance = 3
+const fullResetIsAvailable = import.meta.env.DEV
 const emptyCanvas = { nodes: [], edges: [] }
 const defaultViewport = { x: 0, y: 0, zoom: 1 }
 const defaultViewportState = {
@@ -894,7 +895,9 @@ function ThinkingCanvas() {
         options: { preventDefault: false },
       },
       { hotkey: clearCanvasHotkey, callback: clearCanvas },
-      { hotkey: fullResetHotkey, callback: fullReset },
+      ...(fullResetIsAvailable
+        ? [{ hotkey: fullResetHotkey, callback: fullReset }]
+        : []),
     ],
     { ignoreInputs: true },
   )
@@ -1111,13 +1114,17 @@ function ThinkingCanvas() {
                 Clear
                 <ContextMenuShortcut>{shortcuts.clear}</ContextMenuShortcut>
               </ContextMenuItem>
-              <ContextMenuItem
-                variant="destructive"
-                onClick={fullReset}
-              >
-                Full reset
-                <ContextMenuShortcut>{shortcuts.fullReset}</ContextMenuShortcut>
-              </ContextMenuItem>
+              {fullResetIsAvailable && (
+                <ContextMenuItem
+                  variant="destructive"
+                  onClick={fullReset}
+                >
+                  Full reset
+                  <ContextMenuShortcut>
+                    {shortcuts.fullReset}
+                  </ContextMenuShortcut>
+                </ContextMenuItem>
+              )}
             </>
           )}
         </ContextMenuContent>

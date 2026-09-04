@@ -178,7 +178,8 @@
 - Context-menu actions display their keyboard shortcut indicators as a contextual feature aligned to the right side of each menu item.
 - Context-menu shortcut indicators are operating-system dependent: Mac shortcuts appear on Macs, and Windows shortcuts appear on every other operating system.
 - The context menu provides a Clear action that removes every node and edge, restores the default pan and zoom, exits the fitted view, and makes the logo visible without clearing or changing experience tracks.
-- The context menu provides a Full reset action that clears every localStorage value for the app's origin, including current and older experience tracks, and reloads the app into clean defaults.
+- Local development provides a Full reset action in the canvas context menu, with its displayed keyboard shortcut registered, that clears every localStorage value for the app's origin, including current and older experience tracks, and reloads the app into clean defaults.
+- Full reset is available only while running the Vite development server; Cloudflare Pages production and preview deployments, and other production builds, do not render the action or register its keyboard shortcut.
 </area>
 
 <area name="Instructions">
