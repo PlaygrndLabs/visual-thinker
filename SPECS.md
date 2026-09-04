@@ -31,6 +31,7 @@
 - The canvas has interactive mouse- and keyboard-based basic brainstorm diagramming tools.
 - Nodes can be easily connected by dragging their handles.
 - Connections have no input or output direction: the top, right, bottom, and left handles on every idea node have equal meaning and can each start or end a connection.
+- Each pair of distinct idea nodes can have at most one connection, regardless of the handles or direction used to create it; duplicate connection attempts do not add overlapping lines.
 - Each connection automatically uses the facing handle pair that best matches the current positions of its nodes and updates its handles whenever either connected node moves.
 - Vertically separated nodes whose horizontal spans overlap connect bottom-to-top; horizontally separated nodes whose vertical spans overlap connect right-to-left, with each pair reversed when the node positions are reversed.
 - Connections between nodes render as smooth curved lines without straight segments or elbows.

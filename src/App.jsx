@@ -106,6 +106,29 @@ function getAutomaticHandles(sourceNode, targetNode) {
     : { sourceHandle: 'top', targetHandle: 'bottom' }
 }
 
+function getConnectionPairKey({ source, target }) {
+  return JSON.stringify(source < target ? [source, target] : [target, source])
+}
+
+function getUniqueEdges(edges) {
+  const seenPairs = new Set()
+
+  return edges.filter((edge) => {
+    const pairKey = getConnectionPairKey(edge)
+    if (seenPairs.has(pairKey)) return false
+
+    seenPairs.add(pairKey)
+    return true
+  })
+}
+
+function canConnectNodes(edges, { source, target }) {
+  if (!source || !target || source === target) return false
+
+  const pairKey = getConnectionPairKey({ source, target })
+  return !edges.some((edge) => getConnectionPairKey(edge) === pairKey)
+}
+
 function ThinkingCanvas() {
   const {
     beginTransaction,
@@ -162,7 +185,7 @@ function ThinkingCanvas() {
   const routedEdges = useMemo(() => {
     const nodesById = new Map(canvas.nodes.map((node) => [node.id, node]))
 
-    return canvas.edges.map((edge) => {
+    return getUniqueEdges(canvas.edges).map((edge) => {
       const sourceNode = nodesById.get(edge.source)
       const targetNode = nodesById.get(edge.target)
 
@@ -174,15 +197,22 @@ function ThinkingCanvas() {
       }
     })
   }, [canvas.edges, canvas.nodes])
+  const isValidConnection = useCallback(
+    (connection) => canConnectNodes(canvas.edges, connection),
+    [canvas.edges],
+  )
 
   useEffect(() => {
     setCanvas((currentCanvas) => {
-      const needsMigration = currentCanvas.edges.some(
-        (edge) =>
-          edge.type !== 'default' ||
-          edge.sourceHandle != null ||
-          edge.targetHandle != null,
-      )
+      const uniqueEdges = getUniqueEdges(currentCanvas.edges)
+      const needsMigration =
+        uniqueEdges.length !== currentCanvas.edges.length ||
+        uniqueEdges.some(
+          (edge) =>
+            edge.type !== 'default' ||
+            edge.sourceHandle != null ||
+            edge.targetHandle != null,
+        )
 
       if (!needsMigration) {
         return currentCanvas
@@ -190,7 +220,7 @@ function ThinkingCanvas() {
 
       return {
         ...currentCanvas,
-        edges: currentCanvas.edges.map((edge) => ({
+        edges: uniqueEdges.map((edge) => ({
           ...edge,
           type: 'default',
           sourceHandle: null,
@@ -340,18 +370,24 @@ function ThinkingCanvas() {
 
   const onConnect = useCallback(
     (connection) =>
-      updateCanvas((currentCanvas) => ({
-        ...currentCanvas,
-        edges: addEdge(
-          {
-            ...connection,
-            sourceHandle: null,
-            targetHandle: null,
-            type: 'default',
-          },
-          currentCanvas.edges,
-        ),
-      })),
+      updateCanvas((currentCanvas) => {
+        if (!canConnectNodes(currentCanvas.edges, connection)) {
+          return currentCanvas
+        }
+
+        return {
+          ...currentCanvas,
+          edges: addEdge(
+            {
+              ...connection,
+              sourceHandle: null,
+              targetHandle: null,
+              type: 'default',
+            },
+            currentCanvas.edges,
+          ),
+        }
+      }),
     [updateCanvas],
   )
 
@@ -533,6 +569,7 @@ function ThinkingCanvas() {
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
+              isValidConnection={isValidConnection}
               onBeforeDelete={async () => {
                 beginTransaction()
                 return true
