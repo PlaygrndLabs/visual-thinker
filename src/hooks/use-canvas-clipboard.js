@@ -70,17 +70,18 @@ export function useCanvasClipboard(
   const copySelection = useCallback(() => {
     const selection = getSelection(canvas)
     clipboardWriteRef.current = null
-    if (!hasItems(selection)) return
+    if (!hasItems(selection)) return null
 
     clipboardRef.current = selection
     clipboardWriteRef.current = selection
     pasteCountRef.current = 0
+    return getClipboardText(selection)
   }, [canvas])
 
   const cutSelection = useCallback(() => {
     const selection = getSelection(canvas)
     clipboardWriteRef.current = null
-    if (!hasItems(selection)) return
+    if (!hasItems(selection)) return null
 
     clipboardRef.current = selection
     clipboardWriteRef.current = selection
@@ -100,6 +101,7 @@ export function useCanvasClipboard(
           !removedNodeIds.has(edge.target),
       ),
     }))
+    return getClipboardText(selection)
   }, [canvas, updateCanvas])
 
   const pasteCanvasItems = useCallback((clipboard) => {
@@ -204,6 +206,22 @@ export function useCanvasClipboard(
     [screenToFlowPosition, updateCanvas],
   )
 
+  const pasteSelection = useCallback(async () => {
+    if (clipboardRef.current) {
+      pasteCanvasItems(clipboardRef.current)
+      return true
+    }
+
+    if (!navigator.clipboard?.readText) return false
+
+    try {
+      const text = await navigator.clipboard.readText()
+      return pastePlainText(text)
+    } catch {
+      return false
+    }
+  }, [pasteCanvasItems, pastePlainText])
+
   useEffect(() => {
     const writeCanvasClipboard = (event) => {
       if (isEditableTarget(event.target)) {
@@ -284,5 +302,5 @@ export function useCanvasClipboard(
     }
   }, [pasteCanvasItems, pastePlainText])
 
-  return { copySelection, cutSelection }
+  return { copySelection, cutSelection, pasteSelection }
 }

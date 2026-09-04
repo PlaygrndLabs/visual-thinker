@@ -156,6 +156,12 @@
 
 <area name="Context menu">
 - Right-clicking the canvas opens a shadcn context menu.
+- Right-clicking an unselected node selects only that node and opens a node context menu for it; right-clicking any node within a multi-node selection preserves that selection and opens a node context menu that acts on every selected node.
+- The node context menu provides Remove, Cut, and Copy actions for its singular or plural node selection.
+- Right-clicking a connection selects only that connection and opens a connection context menu for it.
+- The connection context menu provides a Disconnect action for its selected connection.
+- The canvas context menu provides Add node, Select all, and Paste actions.
+- Context-menu actions display their keyboard shortcut indicators as a contextual feature aligned to the right side of each menu item.
 - The context menu provides an always-available Clear action that removes every node and edge, restores the default pan and zoom, exits the fitted view, and makes the logo visible without clearing or changing experience tracks.
 - The context menu provides a Full reset action that clears every localStorage value for the app's origin, including current and older experience tracks, and reloads the app into clean defaults.
 </area>
