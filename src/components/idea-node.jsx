@@ -79,9 +79,10 @@ export function IdeaNode({ id, data, selected }) {
           }`}
         />
       ))}
-      <input
+      <textarea
         ref={inputRef}
-        className="nodrag nowheel block min-w-0 [field-sizing:content] bg-transparent text-sm font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
+        className="nodrag nowheel block min-w-0 resize-none overflow-hidden whitespace-pre [field-sizing:content] bg-transparent text-sm leading-5 font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
+        rows={1}
         value={data.label}
         onBlur={(event) => {
           if (event.currentTarget.value === '') {
@@ -93,7 +94,7 @@ export function IdeaNode({ id, data, selected }) {
         onChange={(event) => updateNodeData(id, { label: event.target.value })}
         onFocus={beginTransaction}
         onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === 'Escape') {
+          if (event.key === 'Escape') {
             event.currentTarget.blur()
           }
         }}

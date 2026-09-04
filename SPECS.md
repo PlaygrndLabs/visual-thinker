@@ -29,7 +29,7 @@
 
 <area name="Basic brainstorm diagramming">
 - The canvas has interactive mouse- and keyboard-based basic brainstorm diagramming tools.
-- Idea nodes fit their text content and retain a small minimum width of 6rem.
+- Idea nodes support multiline text, fit their text content in both dimensions, and retain a small minimum width of 6rem.
 - A new connection starts by dragging from a handle on a node edge, but its dragged end can be released anywhere inside another node without targeting a handle.
 - While the dragged end of a new connection is inside a node, it snaps to the node edge nearest the source node according to automatic connection routing, independently of where the pointer entered or is released within the destination node.
 - Connections have no input or output direction: the top, right, bottom, and left handles on every idea node have equal meaning and can each start or end a connection.

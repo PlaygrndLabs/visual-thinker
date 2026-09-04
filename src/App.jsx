@@ -386,7 +386,7 @@ function ThinkingCanvas() {
     if (selectedNodes.length < 2) return
 
     const activeElement = document.activeElement
-    if (activeElement?.matches('.react-flow__node-idea input')) {
+    if (activeElement?.matches('.react-flow__node-idea textarea')) {
       activeElement.blur()
     }
   }, [])
