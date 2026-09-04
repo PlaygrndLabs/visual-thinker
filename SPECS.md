@@ -118,6 +118,7 @@
 - The logotype prefers the device-installed Georgia face and falls back to Source Serif 4 Regular, loading its Latin glyphs from Google Fonts when the fallback is not installed on the device.
 - The logotype uses the typeface's native spacing and proportions without letter-spacing, font-stretching, or other font-related Tailwind classes.
 - The logo is implemented as a dedicated `Logo` component.
+- The logo text has a soft canvas-colored outer glow that separates it from overlapping canvas content and makes it read as floating above that content.
 - Clicking the logo fades it out with a CSS opacity transition and then removes it from the canvas chrome.
 
 <area name="Favicon">
@@ -153,6 +154,7 @@
 - Panning, scrolling to zoom, and double-clicking to add a node have separate tip keys and separate tip text.
 - The pan tip teaches only Space-drag and middle-drag; it does not mention trackpad panning.
 - Experience tips are muted small text without a box style, sit in the middle of the bottom edge, use the available horizontal space, and do not wrap onto another line.
+- Status-bar tip text has a soft canvas-colored outer glow that separates it from overlapping canvas content and makes it read as floating above that content.
 - Contextual tip requests use `maySuggestTip`; the status bar shows only the highest-priority eligible candidate and remains empty when no candidate is eligible.
 </area>
 </area>
