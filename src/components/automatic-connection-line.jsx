@@ -2,6 +2,7 @@ import { getBezierPath, useStore } from '@xyflow/react'
 
 import {
   getAutomaticHandles,
+  getClosestNodeHandle,
   getNodeHandlePoint,
 } from '@/lib/connection-routing'
 
@@ -19,6 +20,7 @@ export function AutomaticConnectionLine({
 }) {
   const nodeLookup = useStore((state) => state.nodeLookup)
   const flowElement = useStore((state) => state.domNode)
+  const transform = useStore((state) => state.transform)
   const flowBounds = flowElement?.getBoundingClientRect()
   const hoveredTargetNodeElement = flowBounds
     ? document
@@ -36,21 +38,32 @@ export function AutomaticConnectionLine({
     ? nodeLookup.get(hoveredTargetNodeElement.getAttribute('data-id'))
     : null
   const targetNode = hoveredTargetNode ?? toNode
+  const pointerPosition = {
+    x: (pointer.x - transform[0]) / transform[2],
+    y: (pointer.y - transform[1]) / transform[2],
+  }
+  let sourcePosition = getClosestNodeHandle(fromNode, pointerPosition)
 
   if (targetNode && targetNode.id !== fromNode.id) {
-    const automaticTargetPosition = getAutomaticHandles(
+    const automaticHandles = getAutomaticHandles(
       fromNode,
       targetNode,
-    ).targetHandle
+    )
+    sourcePosition = automaticHandles.sourceHandle
     const automaticTargetPoint = getNodeHandlePoint(
       targetNode,
-      automaticTargetPosition,
+      automaticHandles.targetHandle,
     )
 
     toX = automaticTargetPoint.x
     toY = automaticTargetPoint.y
-    toPosition = automaticTargetPosition
+    toPosition = automaticHandles.targetHandle
   }
+
+  const sourcePoint = getNodeHandlePoint(fromNode, sourcePosition)
+  fromX = sourcePoint.x
+  fromY = sourcePoint.y
+  fromPosition = sourcePosition
 
   const [path] = getBezierPath({
     sourceX: fromX,
