@@ -98,6 +98,22 @@ function ThinkingCanvas() {
     updateCanvas,
   )
 
+  useEffect(() => {
+    setCanvas((currentCanvas) => {
+      if (currentCanvas.edges.every((edge) => edge.type === 'default')) {
+        return currentCanvas
+      }
+
+      return {
+        ...currentCanvas,
+        edges: currentCanvas.edges.map((edge) => ({
+          ...edge,
+          type: 'default',
+        })),
+      }
+    })
+  }, [setCanvas])
+
   const panCanvas = useCallback(
     ({ x, y }) => {
       const viewport = getViewport()
@@ -206,7 +222,7 @@ function ThinkingCanvas() {
       updateCanvas((currentCanvas) => ({
         ...currentCanvas,
         edges: addEdge(
-          { ...connection, type: 'smoothstep' },
+          { ...connection, type: 'default' },
           currentCanvas.edges,
         ),
       })),
@@ -364,7 +380,7 @@ function ThinkingCanvas() {
               onPaneClick={onPaneClick}
               connectionRadius={28}
               defaultEdgeOptions={{
-                type: 'smoothstep',
+                type: 'default',
                 style: { stroke: 'var(--primary)', strokeWidth: 2 },
               }}
               deleteKeyCode={['Backspace', 'Delete']}
