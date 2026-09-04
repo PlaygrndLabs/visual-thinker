@@ -24,6 +24,8 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import { useCanvasHistory } from '@/hooks/use-canvas-history'
@@ -55,6 +57,18 @@ const defaultViewportState = {
   ...defaultViewport,
   fitViewport: null,
   isFitViewActive: false,
+}
+const commandKey = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl+'
+const shortcuts = {
+  addNode: 'N',
+  clear: `${commandKey}⌫`,
+  copy: `${commandKey}C`,
+  cut: `${commandKey}X`,
+  disconnect: '⌫',
+  fullReset: `⇧${commandKey}⌫`,
+  paste: `${commandKey}V`,
+  remove: '⌫',
+  selectAll: `${commandKey}A`,
 }
 const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-background-color:transparent]
@@ -151,6 +165,10 @@ function ThinkingCanvas() {
   const [logoResetKey, setLogoResetKey] = useState(0)
   const [pendingFocusNodeId, setPendingFocusNodeId] = useState(null)
   const [statusBarTip, setStatusBarTip] = useState(null)
+  const [contextMenuTarget, setContextMenuTarget] = useState({
+    type: 'canvas',
+    point: null,
+  })
   const pendingEdgeClick = useRef(null)
   const pendingPaneClick = useRef(null)
   const newNodeClickSequence = useRef(null)
@@ -188,7 +206,7 @@ function ThinkingCanvas() {
     zoomIn,
     zoomOut,
   } = useReactFlow()
-  const { copySelection, cutSelection } = useCanvasClipboard(
+  const { copySelection, cutSelection, pasteSelection } = useCanvasClipboard(
     canvas,
     screenToFlowPosition,
     updateCanvas,
@@ -359,6 +377,125 @@ function ThinkingCanvas() {
     },
     [createIdea, getViewport, screenToFlowPosition],
   )
+
+  const addIdeaAtViewportCenter = useCallback(() => {
+    createIdea(
+      screenToFlowPosition({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+      }),
+    )
+  }, [createIdea, screenToFlowPosition])
+
+  const handleContextMenu = useCallback((event) => {
+    const hitElements = document.elementsFromPoint(event.clientX, event.clientY)
+    const nodeElement =
+      event.target.closest('.react-flow__node') ??
+      hitElements
+        .map((element) => element.closest('.react-flow__node'))
+        .find(Boolean)
+    const edgeElement =
+      event.target.closest('.react-flow__edge') ??
+      hitElements
+        .map((element) => element.closest('.react-flow__edge'))
+        .find(Boolean)
+
+    if (nodeElement) {
+      const nodeId = nodeElement.getAttribute('data-id')
+      const selectedNodeIds = canvas.nodes
+        .filter((node) => node.selected)
+        .map((node) => node.id)
+      const nodeIsInSelection = selectedNodeIds.includes(nodeId)
+      const nodeIds = nodeIsInSelection ? selectedNodeIds : [nodeId]
+
+      setCanvas((currentCanvas) => ({
+        nodes: currentCanvas.nodes.map((node) => ({
+          ...node,
+          selected: nodeIds.includes(node.id),
+        })),
+        edges: currentCanvas.edges.map((edge) => ({
+          ...edge,
+          selected: false,
+        })),
+      }))
+      setContextMenuTarget({ type: 'nodes', ids: nodeIds })
+      return
+    }
+
+    if (edgeElement) {
+      const edgeId = edgeElement.getAttribute('data-id')
+
+      setCanvas((currentCanvas) => ({
+        nodes: currentCanvas.nodes.map((node) => ({
+          ...node,
+          selected: false,
+        })),
+        edges: currentCanvas.edges.map((edge) => ({
+          ...edge,
+          selected: edge.id === edgeId,
+        })),
+      }))
+      setContextMenuTarget({ type: 'connection', id: edgeId })
+      return
+    }
+
+    setContextMenuTarget({
+      type: 'canvas',
+      point: { x: event.clientX, y: event.clientY },
+    })
+  }, [canvas.nodes, setCanvas])
+
+  const addIdeaFromContextMenu = useCallback(() => {
+    if (!contextMenuTarget.point) return
+
+    const canvasElement = document.querySelector('.react-flow')
+    if (!canvasElement) return
+
+    createIdeaAtScreenPoint(
+      contextMenuTarget.point,
+      canvasElement.getBoundingClientRect(),
+    )
+  }, [contextMenuTarget, createIdeaAtScreenPoint])
+
+  const writeSelectionToSystemClipboard = useCallback((copyAction) => {
+    const text = copyAction()
+    if (text === null || !navigator.clipboard?.writeText) return
+
+    void navigator.clipboard.writeText(text).catch(() => {})
+  }, [])
+
+  const copyFromContextMenu = useCallback(() => {
+    writeSelectionToSystemClipboard(copySelection)
+  }, [copySelection, writeSelectionToSystemClipboard])
+
+  const cutFromContextMenu = useCallback(() => {
+    writeSelectionToSystemClipboard(cutSelection)
+  }, [cutSelection, writeSelectionToSystemClipboard])
+
+  const removeContextNodes = useCallback(() => {
+    if (contextMenuTarget.type !== 'nodes') return
+
+    const removedNodeIds = new Set(contextMenuTarget.ids)
+    updateCanvas((currentCanvas) => ({
+      nodes: currentCanvas.nodes.filter((node) => !removedNodeIds.has(node.id)),
+      edges: currentCanvas.edges.filter(
+        (edge) =>
+          !removedNodeIds.has(edge.source) &&
+          !removedNodeIds.has(edge.target),
+      ),
+    }))
+  }, [contextMenuTarget, updateCanvas])
+
+  const disconnectContextEdge = useCallback(() => {
+    if (contextMenuTarget.type !== 'connection') return
+
+    updateCanvas((currentCanvas) => ({
+      ...currentCanvas,
+      edges: currentCanvas.edges.filter(
+        (edge) => edge.id !== contextMenuTarget.id,
+      ),
+    }))
+  }, [contextMenuTarget, updateCanvas])
 
   const onPaneClick = useCallback(
     (event) => {
@@ -722,6 +859,7 @@ function ThinkingCanvas() {
 
   useHotkeys(
     [
+      { hotkey: 'N', callback: addIdeaAtViewportCenter },
       { hotkey: 'Mod+A', callback: selectAllNodes },
       { hotkey: 'Mod+Z', callback: undo },
       { hotkey: 'Mod+Shift+Z', callback: redo },
@@ -736,6 +874,8 @@ function ThinkingCanvas() {
         callback: cutSelection,
         options: { preventDefault: false },
       },
+      { hotkey: 'Mod+Backspace', callback: clearCanvas },
+      { hotkey: 'Mod+Shift+Backspace', callback: fullReset },
     ],
     { ignoreInputs: true },
   )
@@ -786,6 +926,7 @@ function ThinkingCanvas() {
           <main
             className="h-full w-full"
             onClickCapture={onCanvasClickCapture}
+            onContextMenuCapture={handleContextMenu}
             onPointerDownCapture={onCanvasPointerDownCapture}
             onWheelCapture={onWheelCapture}
           >
@@ -893,19 +1034,66 @@ function ThinkingCanvas() {
             </ReactFlow>
           </main>
         </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem
-            variant="destructive"
-            onClick={clearCanvas}
-          >
-            Clear
-          </ContextMenuItem>
-          <ContextMenuItem
-            variant="destructive"
-            onClick={fullReset}
-          >
-            Full reset
-          </ContextMenuItem>
+        <ContextMenuContent className="min-w-44">
+          {contextMenuTarget.type === 'nodes' && (
+            <>
+              <ContextMenuItem
+                variant="destructive"
+                onClick={removeContextNodes}
+              >
+                Remove
+                <ContextMenuShortcut>{shortcuts.remove}</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuItem onClick={cutFromContextMenu}>
+                Cut
+                <ContextMenuShortcut>{shortcuts.cut}</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuItem onClick={copyFromContextMenu}>
+                Copy
+                <ContextMenuShortcut>{shortcuts.copy}</ContextMenuShortcut>
+              </ContextMenuItem>
+            </>
+          )}
+          {contextMenuTarget.type === 'connection' && (
+            <ContextMenuItem
+              variant="destructive"
+              onClick={disconnectContextEdge}
+            >
+              Disconnect
+              <ContextMenuShortcut>{shortcuts.disconnect}</ContextMenuShortcut>
+            </ContextMenuItem>
+          )}
+          {contextMenuTarget.type === 'canvas' && (
+            <>
+              <ContextMenuItem onClick={addIdeaFromContextMenu}>
+                Add node
+                <ContextMenuShortcut>{shortcuts.addNode}</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuItem onClick={selectAllNodes}>
+                Select all
+                <ContextMenuShortcut>{shortcuts.selectAll}</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuItem onClick={pasteSelection}>
+                Paste
+                <ContextMenuShortcut>{shortcuts.paste}</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuItem
+                variant="destructive"
+                onClick={clearCanvas}
+              >
+                Clear
+                <ContextMenuShortcut>{shortcuts.clear}</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuItem
+                variant="destructive"
+                onClick={fullReset}
+              >
+                Full reset
+                <ContextMenuShortcut>{shortcuts.fullReset}</ContextMenuShortcut>
+              </ContextMenuItem>
+            </>
+          )}
         </ContextMenuContent>
       </ContextMenu>
     </CanvasHistoryProvider>
