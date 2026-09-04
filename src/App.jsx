@@ -58,18 +58,28 @@ const defaultViewportState = {
   fitViewport: null,
   isFitViewActive: false,
 }
-const commandKey = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl+'
+const isMacPlatform = /mac/i.test(
+  navigator.userAgentData?.platform ?? navigator.platform,
+)
+const commandKey = isMacPlatform ? '⌘' : 'Ctrl+'
+const deleteKey = isMacPlatform ? '⌫' : 'Del'
 const shortcuts = {
   addNode: 'N',
-  clear: `${commandKey}⌫`,
+  clear: `${commandKey}${deleteKey}`,
   copy: `${commandKey}C`,
   cut: `${commandKey}X`,
-  disconnect: '⌫',
-  fullReset: `⇧${commandKey}⌫`,
+  disconnect: deleteKey,
+  fullReset: isMacPlatform
+    ? `⇧${commandKey}${deleteKey}`
+    : `${commandKey}Shift+${deleteKey}`,
   paste: `${commandKey}V`,
-  remove: '⌫',
+  remove: deleteKey,
   selectAll: `${commandKey}A`,
 }
+const clearCanvasHotkey = isMacPlatform ? 'Mod+Backspace' : 'Mod+Delete'
+const fullResetHotkey = isMacPlatform
+  ? 'Mod+Shift+Backspace'
+  : 'Mod+Shift+Delete'
 const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-background-color:transparent]
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-border:none]
@@ -874,8 +884,8 @@ function ThinkingCanvas() {
         callback: cutSelection,
         options: { preventDefault: false },
       },
-      { hotkey: 'Mod+Backspace', callback: clearCanvas },
-      { hotkey: 'Mod+Shift+Backspace', callback: fullReset },
+      { hotkey: clearCanvasHotkey, callback: clearCanvas },
+      { hotkey: fullResetHotkey, callback: fullReset },
     ],
     { ignoreInputs: true },
   )
