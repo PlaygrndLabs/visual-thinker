@@ -72,7 +72,7 @@
 
 - Pressing the primary mouse button on empty canvas is provisional and does not itself create a node or perform another definitive action.
 - Clicking empty canvas does not create a node. After enough time has passed to know the interaction is not a double-click, the status bar requests add-node guidance first and pan guidance second through `maySuggestTip`.
-- Double-clicking empty canvas creates an editable idea node at the clicked position, focuses it for immediate typing, and clears the status-bar tip.
+- Double-clicking empty canvas creates an editable idea node whose top-left corner is offset slightly to the right and below the pointer in screen space, focuses it for immediate typing, and clears the status-bar tip.
 - Empty canvas space uses the normal arrow mouse cursor rather than a hand cursor.
 - Starting a primary-button drag cancels node creation and draws a selection rectangle.
 - The selection rectangle has the translucent blue fill and crisp, solid blue outline associated with the Windows XP Explorer and desktop selection rectangle; its border is not dotted or dashed.
