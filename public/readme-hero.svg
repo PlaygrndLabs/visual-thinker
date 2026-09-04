@@ -1,0 +1,69 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title description">
+  <title id="title">Ideas connected on the Visual Thinker canvas</title>
+  <desc id="description">A spacious dotted canvas showing five connected idea cards and quiet zoom controls.</desc>
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.15" fill="#D6DAE0"/>
+    </pattern>
+    <filter id="canvasShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="30" flood-color="#1E293B" flood-opacity="0.12"/>
+    </filter>
+    <filter id="nodeShadow" x="-30%" y="-40%" width="160%" height="190%">
+      <feDropShadow dx="0" dy="4" stdDeviation="7" flood-color="#64748B" flood-opacity="0.20"/>
+    </filter>
+    <linearGradient id="frame" x1="92" y1="42" x2="1100" y2="590" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F8FAFC"/>
+    </linearGradient>
+    <linearGradient id="focus" x1="458" y1="257" x2="763" y2="372" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8F8"/>
+      <stop offset="1" stop-color="#FFFDFD"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" rx="36" fill="#F1F3F6"/>
+  <g filter="url(#canvasShadow)">
+    <rect x="42" y="38" width="1116" height="554" rx="20" fill="url(#frame)"/>
+    <rect x="42" y="38" width="1116" height="554" rx="20" fill="url(#grid)"/>
+    <rect x="42.5" y="38.5" width="1115" height="553" rx="19.5" stroke="#E5E7EB"/>
+  </g>
+
+  <text x="72" y="83" fill="#171717" font-family="Georgia, 'Times New Roman', serif" font-size="25">Visual Thinker</text>
+
+  <g stroke="#8A94A3" stroke-width="2.4" stroke-linecap="round">
+    <path d="M462 284C418 257 374 232 321 218"/>
+    <path d="M738 284C786 252 834 230 890 221"/>
+    <path d="M485 363C445 401 405 423 348 437"/>
+    <path d="M715 363C759 404 804 426 858 442"/>
+  </g>
+
+  <g filter="url(#nodeShadow)">
+    <rect x="438" y="268" width="324" height="112" rx="22" fill="url(#focus)" stroke="#E9AEB3" stroke-width="2"/>
+    <text x="600" y="312" text-anchor="middle" fill="#111827" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="22" font-weight="600">Make room for the idea</text>
+    <text x="600" y="342" text-anchor="middle" fill="#64748B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="17">then see where it leads</text>
+  </g>
+
+  <g filter="url(#nodeShadow)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" fill="#20242A">
+    <rect x="160" y="177" width="210" height="76" rx="18" fill="white" stroke="#D8DDE5"/>
+    <text x="265" y="222" text-anchor="middle">Capture a thought</text>
+
+    <rect x="830" y="178" width="220" height="76" rx="18" fill="white" stroke="#D8DDE5"/>
+    <text x="940" y="223" text-anchor="middle">Find a connection</text>
+
+    <rect x="178" y="407" width="232" height="76" rx="18" fill="white" stroke="#D8DDE5"/>
+    <text x="294" y="452" text-anchor="middle">Change the shape</text>
+
+    <rect x="800" y="410" width="230" height="76" rx="18" fill="white" stroke="#D8DDE5"/>
+    <text x="915" y="455" text-anchor="middle">Discover what’s next</text>
+  </g>
+
+  <g transform="translate(1087 458)" filter="url(#nodeShadow)">
+    <rect width="42" height="42" rx="8" fill="white" stroke="#D7DCE3"/>
+    <path d="M14 18V14H18M24 14H28V18M28 24V28H24M18 28H14V24" stroke="#5F6875" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect y="50" width="42" height="84" rx="8" fill="white" stroke="#D7DCE3"/>
+    <path d="M15 71H27M21 65V77M15 111H27" stroke="#4B5563" stroke-width="2" stroke-linecap="round"/>
+    <path d="M0 92H42" stroke="#E5E7EB"/>
+  </g>
+
+  <text x="72" y="562" fill="#7C8490" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14">Double-click anywhere to begin</text>
+</svg>
