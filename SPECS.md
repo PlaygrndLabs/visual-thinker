@@ -110,6 +110,7 @@
 
 <area name="Favicon">
 - Every favicon uses a low-detail, minimal brain-shaped mark made from a few broad curves, colored soft pink `#F4B5B8`, with a black serif “V” layered over it.
+- The favicon is drawn as SVG and supplied exclusively as an SVG favicon, with no PNG favicon assets or references.
 </area>
 </area>
 
