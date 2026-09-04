@@ -109,7 +109,7 @@
 - Clicking the logo fades it out with a CSS opacity transition and then removes it from the canvas chrome.
 
 <area name="Favicon">
-- Every favicon uses a low-detail, minimal brain-shaped mark made from a few broad curves, with a serif “V” layered over it.
+- Every favicon uses a low-detail, minimal brain-shaped mark made from a few broad curves, colored soft pink `#F4B5B8`, with a black serif “V” layered over it.
 </area>
 </area>
 
