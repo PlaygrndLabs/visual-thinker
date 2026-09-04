@@ -24,25 +24,32 @@ const experienceLevelRank = {
   'knows-it': 3,
 }
 
-const tipPolicies = {
-  [experienceTips.zoom]: {
-    experience: knownExperiences.canvasScrollZoom,
-    showThroughLevel: 'tried-once',
-  },
-  [experienceTips.pan]: {
-    experience: knownExperiences.canvasPan,
-    showThroughLevel: 'may-know-it',
-  },
-  [experienceTips.addNode]: {
-    experience: knownExperiences.createNodeByDoubleClick,
-    showThroughLevel: 'tried-once',
-  },
-}
-
 const practiceBoutGapMs = 30 * 60 * 1000
+const recentUseSuppressionMs = 60 * 1000
 const sameDayGapMs = 8 * 60 * 60 * 1000
 const multiDayGapMs = 3 * 24 * 60 * 60 * 1000
 const weekGapMs = 7 * 24 * 60 * 60 * 1000
+const monthGapMs = 30 * 24 * 60 * 60 * 1000
+
+const defaultTipReminderIntervals = {
+  'may-know-it': weekGapMs,
+  'knows-it': monthGapMs,
+}
+
+const tipPolicies = {
+  [experienceTips.zoom]: {
+    experience: knownExperiences.canvasScrollZoom,
+    reminderIntervals: defaultTipReminderIntervals,
+  },
+  [experienceTips.pan]: {
+    experience: knownExperiences.canvasPan,
+    reminderIntervals: defaultTipReminderIntervals,
+  },
+  [experienceTips.addNode]: {
+    experience: knownExperiences.createNodeByDoubleClick,
+    reminderIntervals: defaultTipReminderIntervals,
+  },
+}
 
 const emptyExperience = {
   expLevel: 'not-experienced-yet',
@@ -97,6 +104,32 @@ function keepHighestLevel(currentLevel, nextLevel) {
   return experienceLevelRank[nextLevel] > experienceLevelRank[currentLevel]
     ? nextLevel
     : currentLevel
+}
+
+function isSameLocalCalendarDay(firstTimestamp, secondTimestamp) {
+  const firstDate = new Date(firstTimestamp)
+  const secondDate = new Date(secondTimestamp)
+
+  return (
+    firstDate.getFullYear() === secondDate.getFullYear() &&
+    firstDate.getMonth() === secondDate.getMonth() &&
+    firstDate.getDate() === secondDate.getDate()
+  )
+}
+
+function isTipEligible(record, policy, now) {
+  if (record.lastUsedAt === null) return true
+
+  const timeSinceLastUse = now - record.lastUsedAt
+  if (timeSinceLastUse < recentUseSuppressionMs) return false
+
+  if (record.expLevel === 'not-experienced-yet') return true
+
+  if (record.expLevel === 'tried-once') {
+    return !isSameLocalCalendarDay(record.lastUsedAt, now)
+  }
+
+  return timeSinceLastUse >= policy.reminderIntervals[record.expLevel]
 }
 
 function recordExperience(currentRecord, { now, prompted }) {
@@ -178,22 +211,21 @@ export function useExperiences() {
   )
 
   const maySuggestTip = useCallback(
-    (tips) => {
+    (tips = []) => {
+      const now = Date.now()
+
       for (const tip of tips) {
         const policy = tipPolicies[tip]
         if (!policy) throw new Error(`Unknown experience tip: "${tip}"`)
 
-        if (
-          experienceLevelRank[experienceLevels[policy.experience]] <=
-          experienceLevelRank[policy.showThroughLevel]
-        ) {
+        if (isTipEligible(experiences[policy.experience], policy, now)) {
           return tip
         }
       }
 
       return null
     },
-    [experienceLevels],
+    [experiences],
   )
 
   return {

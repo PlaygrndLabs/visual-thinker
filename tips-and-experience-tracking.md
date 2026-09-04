@@ -117,7 +117,7 @@ This distinction is grounded in the difference between immediate retrieval stren
 
 </learning-model>
 
-<tip-selection status="current target">
+<tip-selection status="implemented">
 
 # Recency-aware tip selection
 
@@ -144,7 +144,7 @@ Then evaluate the experience level and age of `lastUsedAt`:
 
 The 60-second rule is intentionally explicit even where a longer level-specific interval also suppresses the tip. It is the immediate protection against the app repeating a suggestion moments after the user followed it.
 
-The expected selection shape is:
+The implemented selection shape is:
 
 ```js
 function maySuggestTip(candidates = []) {
@@ -157,6 +157,8 @@ function maySuggestTip(candidates = []) {
 ```
 
 Tip policies remain configurable per experience. The recency schedule above is the default current direction; a particular interaction may later justify a stricter or looser schedule without changing the priority-selection contract.
+
+`maySuggestTip` reads each experience's full persisted record, not only the derived `experienceLevels` map. It compares `lastUsedAt` against one shared `now` value for the whole candidate evaluation, and `tried-once` uses the user's local calendar day rather than an elapsed 24-hour approximation.
 
 ## Priority behavior
 
@@ -190,7 +192,7 @@ Successful completion of scroll zoom, middle/Space pan, or double-click node cre
 9. **Allow per-tip policies.** The first policy showed zoom and add-node through `tried-once`, showed pan through `may-know-it`, and never showed a tip at `knows-it`.
 10. **Remove trackpad wording.** `Trackpad to pan` was inaccurate guidance for the experience being taught; the pan tip now names only Space-drag and middle-drag.
 11. **Clear a followed tip immediately.** Successful taught actions now call `maySuggestTip`, including with `[]`, rather than directly retaining or clearing an unrelated key.
-12. **Supersede level-only eligibility with level plus recency.** The prior policy allowed pan to reappear immediately after a successful pan. The current target adds recent-use suppression and eventually permits reminders for `may-know-it` and `knows-it` after one week and one month respectively.
+12. **Supersede level-only eligibility with level plus recency.** The prior policy allowed pan to reappear immediately after a successful pan. The implementation adds recent-use suppression and eventually permits reminders for `may-know-it` and `knows-it` after one week and one month respectively.
 
 </decision-history>
 
