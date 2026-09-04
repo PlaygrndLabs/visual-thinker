@@ -1,6 +1,9 @@
 import { getBezierPath, useStore } from '@xyflow/react'
 
-import { getAutomaticHandles } from '@/lib/connection-routing'
+import {
+  getAutomaticHandles,
+  getNodeHandlePoint,
+} from '@/lib/connection-routing'
 
 export function AutomaticConnectionLine({
   connectionLineStyle,
@@ -9,6 +12,7 @@ export function AutomaticConnectionLine({
   fromX,
   fromY,
   pointer,
+  toNode,
   toPosition,
   toX,
   toY,
@@ -16,7 +20,7 @@ export function AutomaticConnectionLine({
   const nodeLookup = useStore((state) => state.nodeLookup)
   const flowElement = useStore((state) => state.domNode)
   const flowBounds = flowElement?.getBoundingClientRect()
-  const targetNodeElement = flowBounds
+  const hoveredTargetNodeElement = flowBounds
     ? document
         .elementsFromPoint(
           pointer.x + flowBounds.left,
@@ -28,32 +32,24 @@ export function AutomaticConnectionLine({
             element && element.getAttribute('data-id') !== fromNode.id,
         )
     : null
-  const targetNode = targetNodeElement
-    ? nodeLookup.get(targetNodeElement.getAttribute('data-id'))
+  const hoveredTargetNode = hoveredTargetNodeElement
+    ? nodeLookup.get(hoveredTargetNodeElement.getAttribute('data-id'))
     : null
+  const targetNode = hoveredTargetNode ?? toNode
 
-  if (targetNode) {
+  if (targetNode && targetNode.id !== fromNode.id) {
     const automaticTargetPosition = getAutomaticHandles(
       fromNode,
       targetNode,
     ).targetHandle
-    const automaticTargetHandle = targetNodeElement.querySelector(
-      `.react-flow__handle.source[data-handleid="${automaticTargetPosition}"]`,
+    const automaticTargetPoint = getNodeHandlePoint(
+      targetNode,
+      automaticTargetPosition,
     )
-    const automaticTargetBounds =
-      automaticTargetHandle?.getBoundingClientRect()
 
-    if (automaticTargetBounds) {
-      toX =
-        automaticTargetBounds.left +
-        automaticTargetBounds.width / 2 -
-        flowBounds.left
-      toY =
-        automaticTargetBounds.top +
-        automaticTargetBounds.height / 2 -
-        flowBounds.top
-      toPosition = automaticTargetPosition
-    }
+    toX = automaticTargetPoint.x
+    toY = automaticTargetPoint.y
+    toPosition = automaticTargetPosition
   }
 
   const [path] = getBezierPath({

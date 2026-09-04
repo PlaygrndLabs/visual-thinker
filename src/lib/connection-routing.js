@@ -13,6 +13,23 @@ function getNodeBounds(node) {
   }
 }
 
+export function getNodeHandlePoint(node, position) {
+  const bounds = getNodeBounds(node)
+
+  switch (position) {
+    case 'top':
+      return { x: bounds.centerX, y: bounds.top }
+    case 'right':
+      return { x: bounds.right, y: bounds.centerY }
+    case 'bottom':
+      return { x: bounds.centerX, y: bounds.bottom }
+    case 'left':
+      return { x: bounds.left, y: bounds.centerY }
+    default:
+      return { x: bounds.centerX, y: bounds.centerY }
+  }
+}
+
 export function getAutomaticHandles(sourceNode, targetNode) {
   const source = getNodeBounds(sourceNode)
   const target = getNodeBounds(targetNode)
