@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useHotkeys } from '@tanstack/react-hotkeys'
 import {
   addEdge,
@@ -58,6 +58,7 @@ function ThinkingCanvas() {
     viewportStorageKey,
     defaultViewportState,
   )
+  const [logoResetKey, setLogoResetKey] = useState(0)
   const selectedViewport = useMemo(
     () => ({
       x: viewportState.x,
@@ -209,14 +210,12 @@ function ThinkingCanvas() {
     [setViewportState],
   )
 
-  const clearCanvas = useCallback(() => {
-    setViewportState((currentState) => ({
-      ...currentState,
-      ...getViewport(),
-      isFitViewActive: false,
-    }))
+  const clearCanvas = useCallback(async () => {
     updateCanvas(emptyCanvas)
-  }, [getViewport, setViewportState, updateCanvas])
+    setViewportState(defaultViewportState)
+    setLogoResetKey((currentKey) => currentKey + 1)
+    await setViewport(defaultViewport)
+  }, [setViewport, setViewportState, updateCanvas])
 
   const selectAllNodes = useCallback(() => {
     setCanvas((currentCanvas) => ({
@@ -318,7 +317,7 @@ function ThinkingCanvas() {
               zoomOnScroll
             >
               <Panel position="top-left" className="m-5">
-                <Logo />
+                <Logo key={logoResetKey} />
               </Panel>
               <Panel
                 position="bottom-center"
@@ -380,7 +379,6 @@ function ThinkingCanvas() {
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem
-            disabled={canvas.nodes.length === 0 && canvas.edges.length === 0}
             variant="destructive"
             onClick={clearCanvas}
           >

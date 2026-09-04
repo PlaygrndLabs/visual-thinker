@@ -90,8 +90,7 @@
 
 <area name="Context menu">
 - Right-clicking the canvas opens a shadcn context menu.
-- The context menu provides a Clear action that removes every node and edge from the canvas.
-- The Clear action is unavailable when the canvas is already empty.
+- The context menu provides an always-available Clear action that fully resets the app state: it removes every node and edge, restores the default pan and zoom, exits the fitted view, and makes the logo visible.
 </area>
 
 <area name="Instructions">
