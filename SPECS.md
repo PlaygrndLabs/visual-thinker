@@ -77,7 +77,7 @@
 - Double-clicking empty canvas creates an editable idea node with empty text whose top-left corner is offset slightly to the right and below the pointer in screen space, focuses its text box for immediate typing, and clears the status-bar tip.
 - Double-clicking empty canvas does not create a node when the proposed node would be more than 50% outside the visible canvas viewport horizontally or vertically; a node that remains exactly 50% visible on both axes can be created.
 - When an idea node's text box loses focus with empty text, the node and its connections are deleted.
-- A connection remains the pointer target while hovered, uses a hand cursor, and absorbs clicks and double-clicks without creating a node or altering the connection.
+- A connection remains the pointer target while hovered and uses a hand cursor; double-clicking it breaks the connection without creating a node.
 - Empty canvas space uses the normal arrow mouse cursor when Space is not held.
 - Starting a primary-button drag cancels node creation and draws a selection rectangle.
 - The selection rectangle has the translucent blue fill and crisp, solid blue outline associated with the Windows XP Explorer and desktop selection rectangle; its border is not dotted or dashed.
