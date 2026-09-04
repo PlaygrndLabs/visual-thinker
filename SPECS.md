@@ -41,7 +41,8 @@
 ### Mouse
 
 - Pressing the primary mouse button on empty canvas is provisional and does not itself create a node or perform another definitive action.
-- Releasing the primary mouse button without dragging completes a click, creates an editable idea node at the clicked position, and focuses it for immediate typing.
+- Clicking empty canvas does not create a node and changes the status bar from its pan-and-zoom tip to a “Double click to add node” tip.
+- Double-clicking empty canvas creates an editable idea node at the clicked position, focuses it for immediate typing, and returns the status bar to its default pan-and-zoom tip.
 - Starting a primary-button drag cancels node creation and draws a selection rectangle.
 - The selection rectangle has the translucent blue fill and crisp, solid blue outline associated with the Windows XP Explorer and desktop selection rectangle; its border is not dotted or dashed.
 - After a rectangle selection is completed, selected nodes keep their individual selected-state highlighting without a shared rectangle bounding the selection.
@@ -94,7 +95,10 @@
 </area>
 
 <area name="Instructions">
-- The “Space + drag or middle-drag to pan · Scroll to zoom” hint is muted small text without a box style, sits in the middle of the bottom edge, uses the available horizontal space, and does not wrap onto another line.
+- A dedicated `StatusBar` component displays the active canvas tip from a tip-key prop and owns the text associated with each tip key.
+- The status bar cross-fades between tips with a CSS transition when its tip-key prop changes.
+- The default “Space + drag or middle-drag to pan · Scroll to zoom” tip is muted small text without a box style, sits in the middle of the bottom edge, uses the available horizontal space, and does not wrap onto another line.
+- The status bar can show a “Double click to add node” tip in place of its default pan-and-zoom tip.
 </area>
 </area>
 </specs>

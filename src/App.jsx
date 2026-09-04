@@ -16,6 +16,7 @@ import { Maximize, Minus, Plus } from 'lucide-react'
 import { CanvasFloatingButton } from '@/components/canvas-floating-button'
 import { IdeaNode } from '@/components/idea-node'
 import { Logo } from '@/components/logo'
+import { StatusBar } from '@/components/status-bar'
 import { CanvasHistoryProvider } from '@/contexts/canvas-history-context'
 import {
   ContextMenu,
@@ -59,6 +60,7 @@ function ThinkingCanvas() {
     defaultViewportState,
   )
   const [logoResetKey, setLogoResetKey] = useState(0)
+  const [statusBarTip, setStatusBarTip] = useState('navigation')
   const selectedViewport = useMemo(
     () => ({
       x: viewportState.x,
@@ -112,10 +114,17 @@ function ThinkingCanvas() {
     [createIdea, screenToFlowPosition],
   )
 
-  const onPaneClick = useCallback(
+  const onPaneClick = useCallback((event) => {
+    if (event.button !== 0) return
+    setStatusBarTip('add-node')
+  }, [])
+
+  const onPaneDoubleClick = useCallback(
     (event) => {
       if (event.button !== 0) return
+      if (!event.target.classList.contains('react-flow__pane')) return
       createIdeaAtScreenPoint({ x: event.clientX, y: event.clientY })
+      setStatusBarTip('navigation')
     },
     [createIdeaAtScreenPoint],
   )
@@ -276,7 +285,7 @@ function ThinkingCanvas() {
     <CanvasHistoryProvider value={{ beginTransaction, commitTransaction }}>
       <ContextMenu>
         <ContextMenuTrigger className="h-screen w-screen bg-background">
-          <main className="h-full w-full">
+          <main className="h-full w-full" onDoubleClick={onPaneDoubleClick}>
             <ReactFlow
               nodes={canvas.nodes}
               edges={canvas.edges}
@@ -321,12 +330,9 @@ function ThinkingCanvas() {
               </Panel>
               <Panel
                 position="bottom-center"
-                className="m-5 whitespace-nowrap text-xs text-muted-foreground"
+                className="m-5"
               >
-                <kbd className="font-sans">Space</kbd> + drag or middle-drag
-                to pan
-                <span className="mx-2 text-border">·</span>
-                Scroll to zoom
+                <StatusBar tipKey={statusBarTip} />
               </Panel>
               <Panel position="bottom-right" className="m-5 -translate-y-4">
                 <div className="flex flex-col items-center gap-2">
