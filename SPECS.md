@@ -101,6 +101,8 @@
 - Dragging to pan while holding Space shows the closed-hand grabbing cursor.
 - Releasing Space returns the cursor to whatever state the rest of the app dictates.
 - Holding Shift while clicking nodes adds them to the selection.
+- Pressing Enter without a modifier while editing an idea ends the editing session without adding a line, acting like Escape.
+- Pressing Command+Enter, Ctrl+Enter, Shift+Enter, Option+Enter, or Alt+Enter while editing an idea adds a line.
 - Ctrl+A or Command+A selects all nodes on the canvas.
 - Backspace or Delete removes selected nodes or edges.
 - Canvas changes can be undone with Ctrl+Z or Command+Z.
