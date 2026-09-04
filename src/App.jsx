@@ -57,6 +57,8 @@ const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_selection]:[--xy-selection-background-color:rgb(49_106_197_/_0.15)]
   [&_.react-flow\_\_selection]:[--xy-selection-border:1px_solid_#316ac5]
   [&_.react-flow\_\_pane]:cursor-default!
+  [&_.react-flow\_\_pane.draggable]:cursor-grab!
+  [&_.react-flow\_\_pane.dragging]:cursor-grabbing!
 `
 
 function didViewportPan(startViewport, endViewport) {
