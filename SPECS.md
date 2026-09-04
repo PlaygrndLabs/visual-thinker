@@ -72,7 +72,8 @@
 
 - Pressing the primary mouse button on empty canvas is provisional and does not itself create a node or perform another definitive action.
 - Clicking empty canvas does not create a node. After enough time has passed to know the interaction is not a double-click, the status bar requests add-node guidance first and pan guidance second through `maySuggestTip`.
-- Double-clicking empty canvas creates an editable idea node whose top-left corner is offset slightly to the right and below the pointer in screen space, focuses it for immediate typing, and clears the status-bar tip.
+- Double-clicking empty canvas creates an editable idea node with empty text whose top-left corner is offset slightly to the right and below the pointer in screen space, focuses its text box for immediate typing, and clears the status-bar tip.
+- When an idea node's text box loses focus with empty text, the node and its connections are deleted.
 - A connection remains the pointer target while hovered, uses a hand cursor, and absorbs clicks and double-clicks without creating a node or altering the connection.
 - Empty canvas space uses the normal arrow mouse cursor when Space is not held.
 - Starting a primary-button drag cancels node creation and draws a selection rectangle.

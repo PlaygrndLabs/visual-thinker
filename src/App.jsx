@@ -148,6 +148,7 @@ function ThinkingCanvas() {
     viewportStateSchema,
   )
   const [logoResetKey, setLogoResetKey] = useState(0)
+  const [pendingFocusNodeId, setPendingFocusNodeId] = useState(null)
   const [statusBarTip, setStatusBarTip] = useState(null)
   const pendingPaneClick = useRef(null)
   const mousePanStartViewport = useRef(null)
@@ -299,11 +300,28 @@ function ThinkingCanvas() {
           id,
           type: 'idea',
           position,
-          data: { label: 'New idea', autofocus: true },
+          data: { label: '' },
         },
       ],
     }))
+    setPendingFocusNodeId(id)
   }, [updateCanvas])
+
+  const finishNodeAutofocus = useCallback((id) => {
+    setPendingFocusNodeId((currentId) => (currentId === id ? null : currentId))
+  }, [])
+
+  const deleteNode = useCallback(
+    (id) => {
+      setCanvas((currentCanvas) => ({
+        nodes: currentCanvas.nodes.filter((node) => node.id !== id),
+        edges: currentCanvas.edges.filter(
+          (edge) => edge.source !== id && edge.target !== id,
+        ),
+      }))
+    },
+    [setCanvas],
+  )
 
   const createIdeaAtScreenPoint = useCallback(
     ({ x, y }) => {
@@ -564,7 +582,15 @@ function ThinkingCanvas() {
   ])
 
   return (
-    <CanvasHistoryProvider value={{ beginTransaction, commitTransaction }}>
+    <CanvasHistoryProvider
+      value={{
+        beginTransaction,
+        commitTransaction,
+        deleteNode,
+        finishNodeAutofocus,
+        pendingFocusNodeId,
+      }}
+    >
       <ContextMenu>
         <ContextMenuTrigger className="h-screen w-screen bg-background">
           <main

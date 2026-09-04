@@ -13,16 +13,25 @@ const handlePositions = [
 export function IdeaNode({ id, data, selected }) {
   const inputRef = useRef(null)
   const { updateNodeData } = useReactFlow()
-  const { beginTransaction, commitTransaction } =
-    useCanvasHistoryTransaction()
+  const {
+    beginTransaction,
+    commitTransaction,
+    deleteNode,
+    finishNodeAutofocus,
+    pendingFocusNodeId,
+  } = useCanvasHistoryTransaction()
 
   useEffect(() => {
-    if (!data.autofocus) return
+    if (pendingFocusNodeId !== id) return
 
-    inputRef.current?.focus()
-    inputRef.current?.select()
-    updateNodeData(id, { autofocus: false })
-  }, [data.autofocus, id, updateNodeData])
+    const focusTimeout = setTimeout(() => {
+      inputRef.current?.focus()
+      inputRef.current?.select()
+      finishNodeAutofocus(id)
+    }, 0)
+
+    return () => clearTimeout(focusTimeout)
+  }, [finishNodeAutofocus, id, pendingFocusNodeId])
 
   return (
     <div
@@ -47,7 +56,13 @@ export function IdeaNode({ id, data, selected }) {
         ref={inputRef}
         className="nodrag nowheel block w-full bg-transparent text-sm font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
         value={data.label}
-        onBlur={commitTransaction}
+        onBlur={(event) => {
+          if (event.currentTarget.value === '') {
+            deleteNode(id)
+          }
+
+          commitTransaction()
+        }}
         onChange={(event) => updateNodeData(id, { label: event.target.value })}
         onFocus={beginTransaction}
         onKeyDown={(event) => {
