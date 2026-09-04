@@ -34,7 +34,7 @@
 - All contents of the canvas come from a single state variable.
 - Canvas contents are stored in browser localStorage, saved after each change, and loaded on page load.
 - Canvas-content persistence uses the `useLocalStorageState` hook.
-- The user's selected pan and zoom are held together as one viewport state value and persist in browser localStorage through `useLocalStorageState`.
+- A single viewport state value holds the user's selected pan and zoom, the fitted pan and zoom, and which view is active; it persists in browser localStorage through `useLocalStorageState`.
 </area>
 
 <interactivity>
@@ -84,6 +84,7 @@
 - The standalone fit-all control uses the same neutral background, border, and icon colors as the grouped zoom controls, including when the fit-all action is unavailable.
 - Viewport controls keep neutral coloring and remain visually stationary when pressed.
 - The fit-all control toggles between fitting all canvas content into view and restoring the user’s previously chosen pan and zoom.
+- Refreshing the page preserves the active side of the fit-all toggle and both of its views; the canvas, button state, and next toggle action continue as though the page had not refreshed.
 - The bottom-right controls are offset upward by the height of one line of instruction text.
 </area>
 

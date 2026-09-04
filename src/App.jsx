@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useHotkeys } from '@tanstack/react-hotkeys'
 import {
   addEdge,
@@ -32,6 +32,11 @@ const canvasStorageKey = 'visual-thinker.canvas.v1'
 const viewportStorageKey = 'visual-thinker.viewport.v1'
 const emptyCanvas = { nodes: [], edges: [] }
 const defaultViewport = { x: 0, y: 0, zoom: 1 }
+const defaultViewportState = {
+  ...defaultViewport,
+  fitViewport: null,
+  isFitViewActive: false,
+}
 const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-background-color:transparent]
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-border:none]
@@ -49,11 +54,24 @@ function ThinkingCanvas() {
     undo,
     updateCanvas,
   } = useCanvasHistory(canvasStorageKey, emptyCanvas)
-  const [isFitViewActive, setIsFitViewActive] = useState(false)
-  const [selectedViewport, setSelectedViewport] = useLocalStorageState(
+  const [viewportState, setViewportState] = useLocalStorageState(
     viewportStorageKey,
-    defaultViewport,
+    defaultViewportState,
   )
+  const selectedViewport = useMemo(
+    () => ({
+      x: viewportState.x,
+      y: viewportState.y,
+      zoom: viewportState.zoom,
+    }),
+    [viewportState.x, viewportState.y, viewportState.zoom],
+  )
+  const isFitViewActive = Boolean(
+    viewportState.isFitViewActive && viewportState.fitViewport,
+  )
+  const initialViewport = isFitViewActive
+    ? viewportState.fitViewport
+    : selectedViewport
   const {
     fitView,
     getViewport,
@@ -141,28 +159,64 @@ function ThinkingCanvas() {
   }, [])
 
   const handleZoomIn = useCallback(async () => {
-    setIsFitViewActive(false)
+    setViewportState((currentState) => ({
+      ...currentState,
+      isFitViewActive: false,
+    }))
     await zoomIn({ duration: 200 })
-    setSelectedViewport(getViewport())
-  }, [getViewport, setSelectedViewport, zoomIn])
+    setViewportState((currentState) => ({
+      ...currentState,
+      ...getViewport(),
+      isFitViewActive: false,
+    }))
+  }, [getViewport, setViewportState, zoomIn])
 
   const handleZoomOut = useCallback(async () => {
-    setIsFitViewActive(false)
+    setViewportState((currentState) => ({
+      ...currentState,
+      isFitViewActive: false,
+    }))
     await zoomOut({ duration: 200 })
-    setSelectedViewport(getViewport())
-  }, [getViewport, setSelectedViewport, zoomOut])
+    setViewportState((currentState) => ({
+      ...currentState,
+      ...getViewport(),
+      isFitViewActive: false,
+    }))
+  }, [getViewport, setViewportState, zoomOut])
+
+  const handleMoveStart = useCallback(
+    (event) => {
+      if (!event) return
+
+      setViewportState((currentState) => ({
+        ...currentState,
+        isFitViewActive: false,
+      }))
+    },
+    [setViewportState],
+  )
 
   const handleMoveEnd = useCallback(
     (event, viewport) => {
-      if (event) setSelectedViewport(viewport)
+      if (!event) return
+
+      setViewportState((currentState) => ({
+        ...currentState,
+        ...viewport,
+        isFitViewActive: false,
+      }))
     },
-    [setSelectedViewport],
+    [setViewportState],
   )
 
   const clearCanvas = useCallback(() => {
-    setIsFitViewActive(false)
+    setViewportState((currentState) => ({
+      ...currentState,
+      ...getViewport(),
+      isFitViewActive: false,
+    }))
     updateCanvas(emptyCanvas)
-  }, [updateCanvas])
+  }, [getViewport, setViewportState, updateCanvas])
 
   const selectAllNodes = useCallback(() => {
     setCanvas((currentCanvas) => ({
@@ -195,13 +249,29 @@ function ThinkingCanvas() {
   const toggleFitView = useCallback(async () => {
     if (isFitViewActive) {
       await setViewport(selectedViewport, { duration: 300 })
-      setIsFitViewActive(false)
+      setViewportState((currentState) => ({
+        ...currentState,
+        isFitViewActive: false,
+      }))
       return
     }
 
     const didFit = await fitView({ duration: 300, maxZoom: 1.4, padding: 0.2 })
-    setIsFitViewActive(didFit)
-  }, [fitView, isFitViewActive, selectedViewport, setViewport])
+    if (!didFit) return
+
+    setViewportState((currentState) => ({
+      ...currentState,
+      fitViewport: getViewport(),
+      isFitViewActive: true,
+    }))
+  }, [
+    fitView,
+    getViewport,
+    isFitViewActive,
+    selectedViewport,
+    setViewport,
+    setViewportState,
+  ])
 
   return (
     <CanvasHistoryProvider value={{ beginTransaction, commitTransaction }}>
@@ -223,9 +293,7 @@ function ThinkingCanvas() {
               onNodeDragStart={beginTransaction}
               onNodeDragStop={commitTransaction}
               onSelectionChange={onSelectionChange}
-              onMoveStart={(event) => {
-                if (event) setIsFitViewActive(false)
-              }}
+              onMoveStart={handleMoveStart}
               onMoveEnd={handleMoveEnd}
               onPaneClick={onPaneClick}
               connectionRadius={28}
@@ -234,7 +302,7 @@ function ThinkingCanvas() {
                 style: { stroke: 'var(--primary)', strokeWidth: 2 },
               }}
               deleteKeyCode={['Backspace', 'Delete']}
-              defaultViewport={selectedViewport}
+              defaultViewport={initialViewport}
               multiSelectionKeyCode="Shift"
               panOnDrag={[1]}
               panActivationKeyCode="Space"
