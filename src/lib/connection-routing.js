@@ -1,4 +1,4 @@
-function getNodeBounds(node) {
+export function getNodeBounds(node) {
   const position = node.internals?.positionAbsolute ?? node.position
   const width = node.measured?.width ?? node.width ?? 0
   const height = node.measured?.height ?? node.height ?? 0
@@ -10,6 +10,21 @@ function getNodeBounds(node) {
     bottom: position.y + height,
     centerX: position.x + width / 2,
     centerY: position.y + height / 2,
+  }
+}
+
+export function getNodeHandlePoint(node, position) {
+  const bounds = getNodeBounds(node)
+
+  switch (position) {
+    case 'top':
+      return { x: bounds.centerX, y: bounds.top }
+    case 'right':
+      return { x: bounds.right, y: bounds.centerY }
+    case 'bottom':
+      return { x: bounds.centerX, y: bounds.bottom }
+    default:
+      return { x: bounds.left, y: bounds.centerY }
   }
 }
 
