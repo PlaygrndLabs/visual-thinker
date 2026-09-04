@@ -30,6 +30,53 @@ There are no files to organize or modes to learn. The interface stays quiet, you
 - **Stay in flow.** Copy, paste, cut, undo, redo, zoom, and pan with familiar desktop gestures.
 - **Return where you left off.** Ideas and viewport state persist locally in your browser.
 
+## Think with an agent through WebMCP
+
+Visual Thinker is a strong fit for [WebMCP](https://github.com/webmachinelearning/webmcp) because its value lives in a shared, visual workspace. The user and agent need to see and shape the same ideas, connections, and spatial relationships—not exchange a hidden document through a separate backend.
+
+Without WebMCP, an agent has to infer the canvas from screenshots or the DOM and simulate a long sequence of pointer interactions. Visual Thinker instead exposes its existing client-side canvas actions as structured tools. The agent can make precise, reliable changes in the open tab while the user watches, adjusts the result directly, and uses the same undo history.
+
+This makes workflows possible that are awkward with either chat or manual diagramming alone. A person can describe the structure they want in natural language; the agent can inspect the current canvas, build or reorganize a mind map in batches, and connect related ideas; then the person can immediately move, edit, or undo anything on the canvas. Both stay grounded in one visible source of truth.
+
+### Available tools
+
+| Tool | What it enables |
+| --- | --- |
+| `inspect_canvas` | Read paginated ideas and connections, plus the visible canvas bounds. |
+| `create_ideas` | Add a batch of ideas at explicit canvas coordinates. |
+| `update_ideas` | Edit idea text and positions in a batch. |
+| `connect_ideas` | Add unique, undirected connections between ideas. |
+| `disconnect_ideas` | Remove connections between idea pairs. |
+| `delete_ideas` | Remove ideas and their incident connections. |
+
+Each mutation is one undoable canvas change and follows the same state, history, connection, and `localStorage` persistence paths as direct human interaction. Inputs are validated with Zod, the WebMCP input JSON Schemas are generated from those definitions, read results identify user-authored text as untrusted content, and browsers without WebMCP continue to get the complete human interface.
+
+The React integration registers tools for the lifetime of the canvas and unregisters them with an `AbortController`. In simplified form, the implementation in [`src/hooks/use-webmcp-tools.js`](src/hooks/use-webmcp-tools.js) follows this shape:
+
+```js
+document.modelContext.registerTool({
+  name: 'create_ideas',
+  description:
+    'Create one or more non-empty ideas at explicit absolute canvas coordinates in one undoable change.',
+  inputSchema: getInputSchema(createIdeasInputSchema),
+  annotations: {
+    consequentialHint: false,
+    readOnlyHint: false,
+    untrustedContentHint: false,
+  },
+  execute(input) {
+    const { ideas } = parseInput(
+      'create_ideas',
+      createIdeasInputSchema,
+      input,
+    )
+
+    // Apply the validated batch through the app's canvas update path,
+    // then return the generated idea IDs to the agent.
+  },
+}, { signal: controller.signal })
+```
+
 ## Essential gestures
 
 | Intent | Mouse or trackpad | Keyboard |

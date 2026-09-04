@@ -34,6 +34,7 @@
 - The project is open source under a root-level MIT license file that GitHub detects and displays at the top of the repository page in the About section.
 - The `README.md` tagline is “a neural network inspired visual brainstorming and discovery tool for your agents to drive and you to tweak”.
 - `README.md` is a polished, representative introduction to Visual Thinker that communicates its purpose and interaction model, prominently links to the live app, visually represents the product, and provides accurate local-development, build, deployment, and contribution guidance.
+- `README.md` explains why Visual Thinker is a strong fit for WebMCP, how WebMCP improves the user experience, what people and agents can accomplish together, how the six canvas tools are implemented, and shows the native `document.modelContext.registerTool` integration shape.
 </area>
 
 <area name="Basic brainstorm diagramming">
