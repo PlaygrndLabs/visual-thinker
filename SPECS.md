@@ -120,7 +120,7 @@
 - Clicking the logo fades it out with a CSS opacity transition and then removes it from the canvas chrome.
 
 <area name="Favicon">
-- Every favicon uses a low-detail, minimal brain-shaped mark made from a few broad curves, colored soft pink `#F4B5B8`, with a compact black serif “V” in bold strokes layered over it.
+- Every favicon uses a low-detail, minimal brain-shaped mark made from a few broad curves, colored soft pink `#F4B5B8`, with a compact black serif “V” in bold strokes placed high within the brain and layered over it.
 - The favicon is drawn as SVG and supplied exclusively as an SVG favicon, with no PNG favicon assets or references.
 - The SVG favicon contains only the brain and “V” artwork on a transparent background.
 </area>
