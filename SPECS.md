@@ -121,6 +121,7 @@
 
 <area name="Favicon">
 - Every favicon uses a low-detail, minimal brain-shaped mark made from a few broad curves, colored soft pink `#F4B5B8`, with a compact black serif “V” in bold strokes placed high within the brain and layered over it.
+- The “V” has visible vertical bounds from `y=17` through `y=47` within the favicon's `64×64` SVG viewBox.
 - The favicon is drawn as SVG and supplied exclusively as an SVG favicon, with no PNG favicon assets or references.
 - The SVG favicon contains only the brain and “V” artwork on a transparent background.
 </area>
