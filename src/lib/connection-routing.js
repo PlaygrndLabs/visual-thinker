@@ -30,6 +30,21 @@ export function getNodeHandlePoint(node, position) {
   }
 }
 
+export function getClosestNodeHandle(node, point) {
+  const positions = ['top', 'right', 'bottom', 'left']
+
+  return positions.reduce((closestPosition, position) => {
+    const closestPoint = getNodeHandlePoint(node, closestPosition)
+    const handlePoint = getNodeHandlePoint(node, position)
+    const closestDistance =
+      (point.x - closestPoint.x) ** 2 + (point.y - closestPoint.y) ** 2
+    const handleDistance =
+      (point.x - handlePoint.x) ** 2 + (point.y - handlePoint.y) ** 2
+
+    return handleDistance < closestDistance ? position : closestPosition
+  })
+}
+
 export function getAutomaticHandles(sourceNode, targetNode) {
   const source = getNodeBounds(sourceNode)
   const target = getNodeBounds(targetNode)
