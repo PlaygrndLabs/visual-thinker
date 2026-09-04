@@ -170,7 +170,7 @@
 - Right-clicking a connection selects only that connection and opens a connection context menu for it.
 - The connection context menu provides a Disconnect action for its selected connection.
 - The canvas context menu provides Add node, Select all, and Paste actions.
-- Add node displays Double Click as its shortcut indicator and has no single-key keyboard shortcut.
+- Add node displays Dbl Click as its shortcut indicator and has no single-key keyboard shortcut.
 - Paste is disabled when neither the internal canvas clipboard nor readable external plain text contains pasteable content; Select all is disabled when there are no nodes; Clear is disabled when the canvas is already empty.
 - Context-menu actions display their keyboard shortcut indicators as a contextual feature aligned to the right side of each menu item.
 - Context-menu shortcut indicators are operating-system dependent: Mac shortcuts appear on Macs, and Windows shortcuts appear on every other operating system.
