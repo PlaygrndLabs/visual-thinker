@@ -15,6 +15,7 @@ import {
 import { Maximize, Minus, Plus } from 'lucide-react'
 
 import { CanvasFloatingButton } from '@/components/canvas-floating-button'
+import { AutomaticConnectionLine } from '@/components/automatic-connection-line'
 import { IdeaNode } from '@/components/idea-node'
 import { Logo } from '@/components/logo'
 import { StatusBar } from '@/components/status-bar'
@@ -359,7 +360,7 @@ function ThinkingCanvas() {
     [setCanvas],
   )
 
-  const onConnect = useCallback(
+  const connectNodes = useCallback(
     (connection) =>
       updateCanvas((currentCanvas) => {
         if (!canConnectNodes(currentCanvas.edges, connection)) {
@@ -380,6 +381,28 @@ function ThinkingCanvas() {
         }
       }),
     [updateCanvas],
+  )
+
+  const onConnectEnd = useCallback(
+    (event, connectionState) => {
+      const pointer =
+        'clientX' in event
+          ? event
+          : event.changedTouches?.[0]
+      if (!pointer || !connectionState.fromNode) return
+
+      const targetNodeElement = document
+        .elementFromPoint(pointer.clientX, pointer.clientY)
+        ?.closest('.react-flow__node')
+      const targetNodeId = targetNodeElement?.getAttribute('data-id')
+      if (!targetNodeId) return
+
+      connectNodes({
+        source: connectionState.fromNode.id,
+        target: targetNodeId,
+      })
+    },
+    [connectNodes],
   )
 
   const onSelectionChange = useCallback(({ nodes: selectedNodes }) => {
@@ -568,7 +591,8 @@ function ThinkingCanvas() {
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onEdgeDoubleClick={onEdgeDoubleClick}
-              onConnect={onConnect}
+              onConnect={connectNodes}
+              onConnectEnd={onConnectEnd}
               isValidConnection={isValidConnection}
               onBeforeDelete={async () => {
                 beginTransaction()
@@ -584,6 +608,11 @@ function ThinkingCanvas() {
               onPaneClick={onPaneClick}
               connectionMode={ConnectionMode.Loose}
               connectionRadius={28}
+              connectionLineComponent={AutomaticConnectionLine}
+              connectionLineStyle={{
+                stroke: 'var(--primary)',
+                strokeWidth: 2,
+              }}
               defaultEdgeOptions={{
                 type: 'default',
                 style: { stroke: 'var(--primary)', strokeWidth: 2 },
