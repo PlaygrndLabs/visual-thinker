@@ -472,6 +472,11 @@ function ThinkingCanvas() {
     )
   }, [contextMenuTarget, createIdeaAtScreenPoint])
 
+  const pasteFromContextMenu = useCallback(() => {
+    if (contextMenuTarget.type !== 'canvas') return
+    void pasteSelection(contextMenuTarget.point)
+  }, [contextMenuTarget, pasteSelection])
+
   const writeSelectionToSystemClipboard = useCallback((copyAction) => {
     const text = copyAction()
     if (text === null || !navigator.clipboard?.writeText) return
@@ -1092,7 +1097,7 @@ function ThinkingCanvas() {
               </ContextMenuItem>
               <ContextMenuItem
                 disabled={!pasteIsAvailable}
-                onClick={pasteSelection}
+                onClick={pasteFromContextMenu}
               >
                 Paste
                 <ContextMenuShortcut>{shortcuts.paste}</ContextMenuShortcut>
