@@ -53,7 +53,7 @@ export function IdeaNode({ id, data, selected }) {
       ))}
       <textarea
         ref={inputRef}
-        className="nodrag nowheel block min-w-0 resize-none overflow-hidden whitespace-pre [field-sizing:content] bg-transparent text-sm leading-5 font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
+        className="nodrag nowheel block max-h-25 min-w-0 resize-none overflow-x-hidden overflow-y-auto whitespace-pre [field-sizing:content] bg-transparent text-sm leading-5 font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
         rows={1}
         value={data.label}
         onBlur={(event) => {
