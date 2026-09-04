@@ -5,7 +5,7 @@
 <h1 align="center">Visual Thinker</h1>
 
 <p align="center">
-  A spacious canvas for capturing ideas, finding connections, and thinking in the open.
+  a neural network inspired visual brainstorming and discovery tool for your agents to drive and you to tweak
 </p>
 
 <p align="center">
