@@ -35,7 +35,7 @@ export function IdeaNode({ id, data, selected }) {
 
   return (
     <div
-      className={`group min-w-48 rounded-xl border bg-card px-3 py-2 shadow-[0_8px_24px_oklch(0.25_0.03_260/0.08)] transition-[border-color,box-shadow] ${
+      className={`group w-fit min-w-24 rounded-xl border bg-card px-3 py-2 shadow-[0_8px_24px_oklch(0.25_0.03_260/0.08)] transition-[border-color,box-shadow] ${
         selected
           ? 'border-primary shadow-[0_0_0_3px_oklch(0.58_0.2_260/0.16),0_8px_24px_oklch(0.25_0.03_260/0.1)]'
           : 'border-border'
@@ -54,7 +54,7 @@ export function IdeaNode({ id, data, selected }) {
       ))}
       <input
         ref={inputRef}
-        className="nodrag nowheel block w-full bg-transparent text-sm font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
+        className="nodrag nowheel block min-w-0 [field-sizing:content] bg-transparent text-sm font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
         value={data.label}
         onBlur={(event) => {
           if (event.currentTarget.value === '') {
