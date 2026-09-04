@@ -68,6 +68,44 @@ function didViewportPan(startViewport, endViewport) {
   )
 }
 
+function getNodeBounds(node) {
+  const width = node.measured?.width ?? node.width ?? 0
+  const height = node.measured?.height ?? node.height ?? 0
+
+  return {
+    left: node.position.x,
+    right: node.position.x + width,
+    top: node.position.y,
+    bottom: node.position.y + height,
+    centerX: node.position.x + width / 2,
+    centerY: node.position.y + height / 2,
+  }
+}
+
+function getAutomaticHandles(sourceNode, targetNode) {
+  const source = getNodeBounds(sourceNode)
+  const target = getNodeBounds(targetNode)
+  const deltaX = target.centerX - source.centerX
+  const deltaY = target.centerY - source.centerY
+  const overlapsHorizontally =
+    Math.max(source.left, target.left) <= Math.min(source.right, target.right)
+  const overlapsVertically =
+    Math.max(source.top, target.top) <= Math.min(source.bottom, target.bottom)
+  const useHorizontalHandles = overlapsVertically
+    ? !overlapsHorizontally || Math.abs(deltaX) > Math.abs(deltaY)
+    : !overlapsHorizontally && Math.abs(deltaX) > Math.abs(deltaY)
+
+  if (useHorizontalHandles) {
+    return deltaX >= 0
+      ? { sourceHandle: 'right', targetHandle: 'left' }
+      : { sourceHandle: 'left', targetHandle: 'right' }
+  }
+
+  return deltaY >= 0
+    ? { sourceHandle: 'bottom', targetHandle: 'top' }
+    : { sourceHandle: 'top', targetHandle: 'bottom' }
+}
+
 function ThinkingCanvas() {
   const {
     beginTransaction,
@@ -140,14 +178,29 @@ function ThinkingCanvas() {
     screenToFlowPosition,
     updateCanvas,
   )
+  const routedEdges = useMemo(() => {
+    const nodesById = new Map(canvas.nodes.map((node) => [node.id, node]))
+
+    return canvas.edges.map((edge) => {
+      const sourceNode = nodesById.get(edge.source)
+      const targetNode = nodesById.get(edge.target)
+
+      if (!sourceNode || !targetNode) return edge
+
+      return {
+        ...edge,
+        ...getAutomaticHandles(sourceNode, targetNode),
+      }
+    })
+  }, [canvas.edges, canvas.nodes])
 
   useEffect(() => {
     setCanvas((currentCanvas) => {
       const needsMigration = currentCanvas.edges.some(
         (edge) =>
           edge.type !== 'default' ||
-          edge.sourceHandle == null ||
-          edge.targetHandle == null,
+          edge.sourceHandle != null ||
+          edge.targetHandle != null,
       )
 
       if (!needsMigration) {
@@ -159,8 +212,8 @@ function ThinkingCanvas() {
         edges: currentCanvas.edges.map((edge) => ({
           ...edge,
           type: 'default',
-          sourceHandle: edge.sourceHandle ?? 'right',
-          targetHandle: edge.targetHandle ?? 'left',
+          sourceHandle: null,
+          targetHandle: null,
         })),
       }
     })
@@ -312,7 +365,12 @@ function ThinkingCanvas() {
       updateCanvas((currentCanvas) => ({
         ...currentCanvas,
         edges: addEdge(
-          { ...connection, type: 'default' },
+          {
+            ...connection,
+            sourceHandle: null,
+            targetHandle: null,
+            type: 'default',
+          },
           currentCanvas.edges,
         ),
       })),
@@ -467,7 +525,7 @@ function ThinkingCanvas() {
           >
             <ReactFlow
               nodes={canvas.nodes}
-              edges={canvas.edges}
+              edges={routedEdges}
               nodeTypes={nodeTypes}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
