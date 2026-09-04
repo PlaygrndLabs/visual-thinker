@@ -65,7 +65,6 @@ export function useCanvasClipboard(
 ) {
   const clipboardRef = useRef(null)
   const clipboardWriteRef = useRef(null)
-  const pasteFallbackRef = useRef(null)
   const pasteCountRef = useRef(0)
 
   const copySelection = useCallback(() => {
@@ -205,14 +204,6 @@ export function useCanvasClipboard(
     [screenToFlowPosition, updateCanvas],
   )
 
-  const pasteSelection = useCallback(() => {
-    window.clearTimeout(pasteFallbackRef.current)
-    pasteFallbackRef.current = window.setTimeout(() => {
-      pasteFallbackRef.current = null
-      if (clipboardRef.current) pasteCanvasItems(clipboardRef.current)
-    }, 0)
-  }, [pasteCanvasItems])
-
   useEffect(() => {
     const writeCanvasClipboard = (event) => {
       if (isEditableTarget(event.target)) {
@@ -244,8 +235,6 @@ export function useCanvasClipboard(
         try {
           const clipboard = JSON.parse(canvasData)
           if (isCanvasClipboard(clipboard)) {
-            window.clearTimeout(pasteFallbackRef.current)
-            pasteFallbackRef.current = null
             pasteCanvasItems(clipboard)
             event.preventDefault()
             return
@@ -261,8 +250,6 @@ export function useCanvasClipboard(
         internalClipboard &&
         text === getClipboardText(internalClipboard)
       ) {
-        window.clearTimeout(pasteFallbackRef.current)
-        pasteFallbackRef.current = null
         pasteCanvasItems(internalClipboard)
         event.preventDefault()
         return
@@ -270,8 +257,6 @@ export function useCanvasClipboard(
 
       if (!pastePlainText(text)) return
 
-      window.clearTimeout(pasteFallbackRef.current)
-      pasteFallbackRef.current = null
       event.preventDefault()
     }
 
@@ -291,7 +276,6 @@ export function useCanvasClipboard(
     window.addEventListener('blur', forgetInMemoryClipboard)
 
     return () => {
-      window.clearTimeout(pasteFallbackRef.current)
       document.removeEventListener('copy', writeCanvasClipboard)
       document.removeEventListener('cut', writeCanvasClipboard)
       document.removeEventListener('paste', pasteClipboard)
@@ -300,5 +284,5 @@ export function useCanvasClipboard(
     }
   }, [pasteCanvasItems, pastePlainText])
 
-  return { copySelection, cutSelection, pasteSelection }
+  return { copySelection, cutSelection }
 }

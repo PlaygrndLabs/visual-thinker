@@ -62,7 +62,7 @@ function ThinkingCanvas() {
     zoomIn,
     zoomOut,
   } = useReactFlow()
-  const { copySelection, cutSelection, pasteSelection } = useCanvasClipboard(
+  const { copySelection, cutSelection } = useCanvasClipboard(
     canvas,
     screenToFlowPosition,
     updateCanvas,
@@ -181,11 +181,6 @@ function ThinkingCanvas() {
       {
         hotkey: 'Mod+C',
         callback: copySelection,
-        options: { preventDefault: false },
-      },
-      {
-        hotkey: 'Mod+V',
-        callback: pasteSelection,
         options: { preventDefault: false },
       },
       {
