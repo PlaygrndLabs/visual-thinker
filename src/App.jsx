@@ -351,6 +351,10 @@ function ThinkingCanvas() {
     ],
   )
 
+  const onEdgeDoubleClick = useCallback((event) => {
+    event.stopPropagation()
+  }, [])
+
   useEffect(
     () => () => clearTimeout(pendingPaneClick.current),
     [],
@@ -574,6 +578,7 @@ function ThinkingCanvas() {
               nodeTypes={nodeTypes}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
+              onEdgeDoubleClick={onEdgeDoubleClick}
               onConnect={onConnect}
               isValidConnection={isValidConnection}
               onBeforeDelete={async () => {
