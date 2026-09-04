@@ -11,7 +11,7 @@ export function Logo() {
       <button
         type="button"
         aria-label="Hide Visual Thinker logo"
-        className={`m-0 border-0 bg-transparent p-0 select-none whitespace-nowrap text-foreground/85 [text-shadow:0_0_2px_var(--background),0_0_5px_var(--background),0_0_10px_var(--background),0_0_18px_var(--background)] transition-opacity duration-300 ease-out ${isFading ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
+        className={`m-0 border-0 bg-transparent p-0 select-none whitespace-nowrap text-foreground/85 [paint-order:stroke_fill] [-webkit-text-stroke:2px_var(--background)] [text-shadow:0_0_6px_var(--background),0_0_6px_var(--background),0_0_14px_var(--background),0_0_14px_var(--background),0_0_28px_var(--background),0_0_28px_var(--background),0_0_44px_var(--background),0_0_56px_var(--background)] transition-opacity duration-300 ease-out ${isFading ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
         onClick={() => setIsFading(true)}
         onTransitionEnd={(event) => {
           if (isFading && event.propertyName === 'opacity') setIsHidden(true)
