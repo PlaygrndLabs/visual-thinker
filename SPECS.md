@@ -49,7 +49,9 @@
 - After a rectangle selection is completed, selected nodes keep their individual selected-state highlighting without a shared rectangle bounding the selection.
 - A single clicked node is selected by itself and its text box receives focus for editing.
 - When multiple nodes are selected, their text boxes do not have editing focus.
-- The mouse wheel zooms the canvas in and out.
+- A desktop wheel gesture that reports any nonzero horizontal delta is treated as trackpad-like input and pans the canvas in both directions for the rest of that gesture.
+- A desktop wheel gesture that reports only vertical delta zooms the canvas in and out.
+- Ctrl+scroll or Command+scroll zooms the canvas regardless of the wheel gesture's horizontal delta.
 - Middle-button drag pans the canvas.
 
 ### Keyboard
@@ -98,7 +100,7 @@
 <area name="Instructions">
 - A dedicated `StatusBar` component displays the active canvas tip from a tip-key prop and owns the text associated with each tip key.
 - The status bar cross-fades between tips with a CSS transition when its tip-key prop changes.
-- The default “Space + drag or middle-drag to pan · Scroll to zoom” tip is muted small text without a box style, sits in the middle of the bottom edge, uses the available horizontal space, and does not wrap onto another line.
+- The default “Space + drag or middle-drag to pan · Trackpad to pan · Wheel to zoom” tip is muted small text without a box style, sits in the middle of the bottom edge, uses the available horizontal space, and does not wrap onto another line.
 - The status bar can show a “Double click to add node” tip in place of its default pan-and-zoom tip.
 </area>
 </area>

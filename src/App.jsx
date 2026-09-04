@@ -27,6 +27,7 @@ import {
 import { useCanvasHistory } from '@/hooks/use-canvas-history'
 import { useCanvasClipboard } from '@/hooks/use-canvas-clipboard'
 import { useLocalStorageState } from '@/hooks/use-local-storage-state'
+import { useWheelIntent } from '@/hooks/use-wheel-intent'
 
 const nodeTypes = { idea: IdeaNode }
 const canvasStorageKey = 'visual-thinker.canvas.v1'
@@ -91,6 +92,39 @@ function ThinkingCanvas() {
     screenToFlowPosition,
     updateCanvas,
   )
+
+  const panCanvas = useCallback(
+    ({ x, y }) => {
+      const viewport = getViewport()
+      void setViewport({
+        ...viewport,
+        x: viewport.x + x,
+        y: viewport.y + y,
+      })
+    },
+    [getViewport, setViewport],
+  )
+
+  const startTrackpadPan = useCallback(() => {
+    setViewportState((currentState) => ({
+      ...currentState,
+      isFitViewActive: false,
+    }))
+  }, [setViewportState])
+
+  const finishTrackpadPan = useCallback(() => {
+    setViewportState((currentState) => ({
+      ...currentState,
+      ...getViewport(),
+      isFitViewActive: false,
+    }))
+  }, [getViewport, setViewportState])
+
+  const onWheelCapture = useWheelIntent({
+    onPan: panCanvas,
+    onPanEnd: finishTrackpadPan,
+    onPanStart: startTrackpadPan,
+  })
 
   const createIdea = useCallback((position) => {
     const id = `idea-${crypto.randomUUID()}`
@@ -300,7 +334,11 @@ function ThinkingCanvas() {
     <CanvasHistoryProvider value={{ beginTransaction, commitTransaction }}>
       <ContextMenu>
         <ContextMenuTrigger className="h-screen w-screen bg-background">
-          <main className="h-full w-full" onDoubleClick={onPaneDoubleClick}>
+          <main
+            className="h-full w-full"
+            onDoubleClick={onPaneDoubleClick}
+            onWheelCapture={onWheelCapture}
+          >
             <ReactFlow
               nodes={canvas.nodes}
               edges={canvas.edges}

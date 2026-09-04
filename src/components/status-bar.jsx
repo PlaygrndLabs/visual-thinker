@@ -3,7 +3,9 @@ const tips = {
     <>
       <kbd className="font-sans">Space</kbd> + drag or middle-drag to pan
       <span className="mx-2 text-border">·</span>
-      Scroll to zoom
+      Trackpad to pan
+      <span className="mx-2 text-border">·</span>
+      Wheel to zoom
     </>
   ),
   'add-node': <>Double click to add node</>,
