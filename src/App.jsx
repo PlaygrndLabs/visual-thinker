@@ -64,7 +64,7 @@ const isMacPlatform = /mac/i.test(
 const commandKey = isMacPlatform ? '⌘' : 'Ctrl+'
 const deleteKey = isMacPlatform ? '⌫' : 'Del'
 const shortcuts = {
-  addNode: 'N',
+  addNode: 'Double Click',
   clear: `${commandKey}${deleteKey}`,
   copy: `${commandKey}C`,
   cut: `${commandKey}X`,
@@ -175,6 +175,7 @@ function ThinkingCanvas() {
   const [logoResetKey, setLogoResetKey] = useState(0)
   const [pendingFocusNodeId, setPendingFocusNodeId] = useState(null)
   const [statusBarTip, setStatusBarTip] = useState(null)
+  const [pasteIsAvailable, setPasteIsAvailable] = useState(false)
   const [contextMenuTarget, setContextMenuTarget] = useState({
     type: 'canvas',
     point: null,
@@ -186,6 +187,7 @@ function ThinkingCanvas() {
   const suppressPaneClickReset = useRef(null)
   const mousePanStartViewport = useRef(null)
   const zoomGestureStartZoom = useRef(null)
+  const pasteAvailabilityRequest = useRef(0)
   const { flagExperience, maySuggestTip } = useExperiences()
   const visibleStatusBarTip = maySuggestTip(
     statusBarTip === null ? [] : [statusBarTip],
@@ -216,11 +218,13 @@ function ThinkingCanvas() {
     zoomIn,
     zoomOut,
   } = useReactFlow()
-  const { copySelection, cutSelection, pasteSelection } = useCanvasClipboard(
-    canvas,
-    screenToFlowPosition,
-    updateCanvas,
-  )
+  const {
+    canPasteSelection,
+    copySelection,
+    cutSelection,
+    hasInternalClipboard,
+    pasteSelection,
+  } = useCanvasClipboard(canvas, screenToFlowPosition, updateCanvas)
   const routedEdges = useMemo(() => {
     const nodesById = new Map(canvas.nodes.map((node) => [node.id, node]))
 
@@ -388,16 +392,9 @@ function ThinkingCanvas() {
     [createIdea, getViewport, screenToFlowPosition],
   )
 
-  const addIdeaAtViewportCenter = useCallback(() => {
-    createIdea(
-      screenToFlowPosition({
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
-      }),
-    )
-  }, [createIdea, screenToFlowPosition])
-
   const handleContextMenu = useCallback((event) => {
+    const availabilityRequest = pasteAvailabilityRequest.current + 1
+    pasteAvailabilityRequest.current = availabilityRequest
     const hitElements = document.elementsFromPoint(event.clientX, event.clientY)
     const nodeElement =
       event.target.closest('.react-flow__node') ??
@@ -453,7 +450,15 @@ function ThinkingCanvas() {
       type: 'canvas',
       point: { x: event.clientX, y: event.clientY },
     })
-  }, [canvas.nodes, setCanvas])
+    setPasteIsAvailable(hasInternalClipboard)
+
+    if (!hasInternalClipboard) {
+      void canPasteSelection().then((isAvailable) => {
+        if (pasteAvailabilityRequest.current !== availabilityRequest) return
+        setPasteIsAvailable(isAvailable)
+      })
+    }
+  }, [canPasteSelection, canvas.nodes, hasInternalClipboard, setCanvas])
 
   const addIdeaFromContextMenu = useCallback(() => {
     if (!contextMenuTarget.point) return
@@ -869,7 +874,6 @@ function ThinkingCanvas() {
 
   useHotkeys(
     [
-      { hotkey: 'N', callback: addIdeaAtViewportCenter },
       { hotkey: 'Mod+A', callback: selectAllNodes },
       { hotkey: 'Mod+Z', callback: undo },
       { hotkey: 'Mod+Shift+Z', callback: redo },
@@ -1079,16 +1083,23 @@ function ThinkingCanvas() {
                 Add node
                 <ContextMenuShortcut>{shortcuts.addNode}</ContextMenuShortcut>
               </ContextMenuItem>
-              <ContextMenuItem onClick={selectAllNodes}>
+              <ContextMenuItem
+                disabled={canvas.nodes.length === 0}
+                onClick={selectAllNodes}
+              >
                 Select all
                 <ContextMenuShortcut>{shortcuts.selectAll}</ContextMenuShortcut>
               </ContextMenuItem>
-              <ContextMenuItem onClick={pasteSelection}>
+              <ContextMenuItem
+                disabled={!pasteIsAvailable}
+                onClick={pasteSelection}
+              >
                 Paste
                 <ContextMenuShortcut>{shortcuts.paste}</ContextMenuShortcut>
               </ContextMenuItem>
               <ContextMenuSeparator />
               <ContextMenuItem
+                disabled={canvas.nodes.length === 0 && canvas.edges.length === 0}
                 variant="destructive"
                 onClick={clearCanvas}
               >
