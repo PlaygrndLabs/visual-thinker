@@ -38,6 +38,21 @@
 - Canvas contents are stored in browser localStorage, saved after each change, and loaded on page load.
 - Canvas-content persistence uses the `useLocalStorageState` hook.
 - A single viewport state value holds the user's selected pan and zoom, the fitted pan and zoom, and which view is active; it persists in browser localStorage through `useLocalStorageState`.
+
+<area name="Experience memory">
+- The app remembers the user's familiarity with known experiencable actions so routine guidance can become simpler and disappear as the user demonstrates knowledge.
+- Known experiences include scrolling to zoom, panning the canvas through middle-button drag or Space-drag, and creating a node through canvas double-click.
+- All experience observations are handled by the `flagExperience` function returned from the custom `useExperiences` hook; the hook also returns every known experience's current level and stored evidence.
+- Each experience has one of four monotonic levels: `not-experienced-yet`, `tried-once`, `may-know-it`, or `knows-it`.
+- Each experience stores its level, its last-used date/time timestamp, and bounded evidence of immediate practice and successful recall after a delay; it does not store individual use timestamps or an unbounded lifetime usage count.
+- Experience v1 distinguishes immediate retrieval strength from durable storage strength: repeated uses within one practice bout build capped practice strength with diminishing returns, while successful unprompted reuse after a meaningful delay builds more durable retention strength.
+- A practice bout ends after 30 minutes without using the experience. One, two, four, and eight uses within a bout establish practice-strength levels one through four; additional uses within that bout do not add practice evidence.
+- An unprompted successful return after 30 minutes, 8 hours, 3 days, or 7 days contributes progressively stronger retention evidence. Prompted use builds practice evidence but is not treated as proof of unaided recall.
+- `tried-once` represents initial successful use; `may-know-it` represents demonstrated immediate fluency or initial spaced recall; `knows-it` requires durable retention evidence, or maximum practice strength reinforced by delayed recall.
+- Experience levels never automatically downgrade. The last-used timestamp remains available for a separate future staleness policy.
+- The experience strategy version is part of its localStorage key. Experience v1 uses `visual-thinker.experiences.v1`; a future strategy uses a new key so older evidence remains available for analysis or explicit migration.
+- Raw input events are collapsed into completed, effective interaction episodes before an experience is flagged: one wheel gesture that changes zoom, one drag that moves the viewport, or one successfully created double-click node.
+</area>
 </area>
 
 <interactivity>
@@ -105,6 +120,9 @@
 - The status bar cross-fades between tips with a CSS transition when its tip-key prop changes.
 - The default “Space + drag or middle-drag to pan · Trackpad to pan · Wheel to zoom” tip is muted small text without a box style, sits in the middle of the bottom edge, uses the available horizontal space, and does not wrap onto another line.
 - The status bar can show a “Double click to add node” tip in place of its default pan-and-zoom tip.
+- Routine tips are shown while their experience is `not-experienced-yet` or `tried-once` and hidden when it reaches `may-know-it` or `knows-it`.
+- The navigation tip includes only the pan and zoom guidance the user has not yet demonstrated; when neither is needed, the status-bar guidance is visually absent.
+- The add-node tip is not shown after double-click node creation reaches `may-know-it` or `knows-it`.
 </area>
 </area>
 </specs>

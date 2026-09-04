@@ -26,6 +26,11 @@ import {
 } from '@/components/ui/context-menu'
 import { useCanvasHistory } from '@/hooks/use-canvas-history'
 import { useCanvasClipboard } from '@/hooks/use-canvas-clipboard'
+import {
+  knownExperiences,
+  shouldShowExperienceTip,
+  useExperiences,
+} from '@/hooks/use-experiences'
 import { useLocalStorageState } from '@/hooks/use-local-storage-state'
 import { useWheelIntent } from '@/hooks/use-wheel-intent'
 import {
@@ -37,6 +42,7 @@ const nodeTypes = { idea: IdeaNode }
 const canvasStorageKey = 'visual-thinker.canvas.v1'
 const viewportStorageKey = 'visual-thinker.viewport.v1'
 const paneDoubleClickDelay = 500
+const completedPanDistance = 3
 const emptyCanvas = { nodes: [], edges: [] }
 const defaultViewport = { x: 0, y: 0, zoom: 1 }
 const defaultViewportState = {
@@ -51,6 +57,15 @@ const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_selection]:[--xy-selection-border:1px_solid_#316ac5]
   [&_.react-flow\_\_pane]:cursor-default!
 `
+
+function didViewportPan(startViewport, endViewport) {
+  return (
+    Math.hypot(
+      endViewport.x - startViewport.x,
+      endViewport.y - startViewport.y,
+    ) > completedPanDistance
+  )
+}
 
 function ThinkingCanvas() {
   const {
@@ -70,6 +85,33 @@ function ThinkingCanvas() {
   const [logoResetKey, setLogoResetKey] = useState(0)
   const [statusBarTip, setStatusBarTip] = useState('navigation')
   const pendingPaneClick = useRef(null)
+  const mousePanStartViewport = useRef(null)
+  const trackpadPanStartViewport = useRef(null)
+  const zoomGestureStartZoom = useRef(null)
+  const { experienceLevels, flagExperience } = useExperiences()
+  const showPanTip = shouldShowExperienceTip(
+    experienceLevels[knownExperiences.canvasPan],
+  )
+  const showZoomTip = shouldShowExperienceTip(
+    experienceLevels[knownExperiences.canvasScrollZoom],
+  )
+  const showCreateNodeTip = shouldShowExperienceTip(
+    experienceLevels[knownExperiences.createNodeByDoubleClick],
+  )
+  const navigationTip =
+    showPanTip && showZoomTip
+      ? 'navigation'
+      : showPanTip
+        ? 'pan'
+        : showZoomTip
+          ? 'zoom'
+          : 'none'
+  const visibleStatusBarTip =
+    statusBarTip === 'add-node' && showCreateNodeTip
+      ? 'add-node'
+      : navigationTip
+  const panTipIsVisible = ['navigation', 'pan'].includes(visibleStatusBarTip)
+  const zoomTipIsVisible = ['navigation', 'zoom'].includes(visibleStatusBarTip)
   const selectedViewport = useMemo(
     () => ({
       x: viewportState.x,
@@ -127,24 +169,56 @@ function ThinkingCanvas() {
   )
 
   const startTrackpadPan = useCallback(() => {
+    trackpadPanStartViewport.current = getViewport()
     setViewportState((currentState) => ({
       ...currentState,
-      isFitViewActive: false,
-    }))
-  }, [setViewportState])
-
-  const finishTrackpadPan = useCallback(() => {
-    setViewportState((currentState) => ({
-      ...currentState,
-      ...getViewport(),
       isFitViewActive: false,
     }))
   }, [getViewport, setViewportState])
+
+  const finishTrackpadPan = useCallback(() => {
+    const viewport = getViewport()
+    setViewportState((currentState) => ({
+      ...currentState,
+      ...viewport,
+      isFitViewActive: false,
+    }))
+
+    if (
+      trackpadPanStartViewport.current &&
+      didViewportPan(trackpadPanStartViewport.current, viewport)
+    ) {
+      flagExperience(knownExperiences.canvasPan, {
+        prompted: panTipIsVisible,
+      })
+    }
+
+    trackpadPanStartViewport.current = null
+  }, [flagExperience, getViewport, panTipIsVisible, setViewportState])
+
+  const startWheelZoom = useCallback(() => {
+    zoomGestureStartZoom.current = getViewport().zoom
+  }, [getViewport])
+
+  const finishWheelZoom = useCallback(() => {
+    if (
+      zoomGestureStartZoom.current !== null &&
+      Math.abs(getViewport().zoom - zoomGestureStartZoom.current) > 0.001
+    ) {
+      flagExperience(knownExperiences.canvasScrollZoom, {
+        prompted: zoomTipIsVisible,
+      })
+    }
+
+    zoomGestureStartZoom.current = null
+  }, [flagExperience, getViewport, zoomTipIsVisible])
 
   const onWheelCapture = useWheelIntent({
     onPan: panCanvas,
     onPanEnd: finishTrackpadPan,
     onPanStart: startTrackpadPan,
+    onZoomEnd: finishWheelZoom,
+    onZoomStart: startWheelZoom,
   })
 
   const createIdea = useCallback((position) => {
@@ -172,15 +246,18 @@ function ThinkingCanvas() {
     [createIdea, screenToFlowPosition],
   )
 
-  const onPaneClick = useCallback((event) => {
-    if (event.button !== 0) return
+  const onPaneClick = useCallback(
+    (event) => {
+      if (event.button !== 0) return
 
-    clearTimeout(pendingPaneClick.current)
-    pendingPaneClick.current = setTimeout(() => {
-      setStatusBarTip('add-node')
-      pendingPaneClick.current = null
-    }, paneDoubleClickDelay)
-  }, [])
+      clearTimeout(pendingPaneClick.current)
+      pendingPaneClick.current = setTimeout(() => {
+        if (showCreateNodeTip) setStatusBarTip('add-node')
+        pendingPaneClick.current = null
+      }, paneDoubleClickDelay)
+    },
+    [showCreateNodeTip],
+  )
 
   const onPaneDoubleClick = useCallback(
     (event) => {
@@ -189,9 +266,12 @@ function ThinkingCanvas() {
       clearTimeout(pendingPaneClick.current)
       pendingPaneClick.current = null
       createIdeaAtScreenPoint({ x: event.clientX, y: event.clientY })
+      flagExperience(knownExperiences.createNodeByDoubleClick, {
+        prompted: visibleStatusBarTip === 'add-node',
+      })
       setStatusBarTip('navigation')
     },
-    [createIdeaAtScreenPoint],
+    [createIdeaAtScreenPoint, flagExperience, visibleStatusBarTip],
   )
 
   useEffect(
@@ -268,12 +348,16 @@ function ThinkingCanvas() {
     (event) => {
       if (!event) return
 
+      if (event.type !== 'wheel') {
+        mousePanStartViewport.current = getViewport()
+      }
+
       setViewportState((currentState) => ({
         ...currentState,
         isFitViewActive: false,
       }))
     },
-    [setViewportState],
+    [getViewport, setViewportState],
   )
 
   const handleMoveEnd = useCallback(
@@ -285,8 +369,19 @@ function ThinkingCanvas() {
         ...viewport,
         isFitViewActive: false,
       }))
+
+      if (
+        mousePanStartViewport.current &&
+        didViewportPan(mousePanStartViewport.current, viewport)
+      ) {
+        flagExperience(knownExperiences.canvasPan, {
+          prompted: panTipIsVisible,
+        })
+      }
+
+      mousePanStartViewport.current = null
     },
-    [setViewportState],
+    [flagExperience, panTipIsVisible, setViewportState],
   )
 
   const clearCanvas = useCallback(async () => {
@@ -406,7 +501,7 @@ function ThinkingCanvas() {
                 position="bottom-center"
                 className="m-5"
               >
-                <StatusBar tipKey={statusBarTip} />
+                <StatusBar tipKey={visibleStatusBarTip} />
               </Panel>
               <Panel position="bottom-right" className="m-5 -translate-y-4">
                 <div className="flex flex-col items-center gap-2">

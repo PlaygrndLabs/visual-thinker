@@ -8,6 +8,14 @@ const tips = {
       Wheel to zoom
     </>
   ),
+  pan: (
+    <>
+      <kbd className="font-sans">Space</kbd> + drag or middle-drag to pan
+      <span className="px-1.5">·</span>
+      Trackpad to pan
+    </>
+  ),
+  zoom: <>Wheel to zoom</>,
   'add-node': <>Double click to add node</>,
 }
 
