@@ -449,8 +449,17 @@ function ThinkingCanvas() {
     updateCanvas(emptyCanvas)
     setViewportState(defaultViewportState)
     setLogoResetKey((currentKey) => currentKey + 1)
+    setStatusBarTip('none')
     await setViewport(defaultViewport)
   }, [setViewport, setViewportState, updateCanvas])
+
+  const fullReset = useCallback(() => {
+    try {
+      localStorage.clear()
+    } finally {
+      window.location.reload()
+    }
+  }, [])
 
   const selectAllNodes = useCallback(() => {
     setCanvas((currentCanvas) => ({
@@ -626,6 +635,12 @@ function ThinkingCanvas() {
             onClick={clearCanvas}
           >
             Clear
+          </ContextMenuItem>
+          <ContextMenuItem
+            variant="destructive"
+            onClick={fullReset}
+          >
+            Full reset
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>

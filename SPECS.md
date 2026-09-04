@@ -122,7 +122,8 @@
 
 <area name="Context menu">
 - Right-clicking the canvas opens a shadcn context menu.
-- The context menu provides an always-available Clear action that fully resets the app state: it removes every node and edge, restores the default pan and zoom, exits the fitted view, and makes the logo visible.
+- The context menu provides an always-available Clear action that removes every node and edge, restores the default pan and zoom, exits the fitted view, and makes the logo visible without clearing or changing experience tracks.
+- The context menu provides a Full reset action that clears every localStorage value for the app's origin, including current and older experience tracks, and reloads the app into clean defaults.
 </area>
 
 <area name="Instructions">
