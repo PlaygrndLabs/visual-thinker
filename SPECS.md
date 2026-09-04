@@ -12,6 +12,7 @@
 - The project uses Bun.
 - The project includes Storybook, shadcn, and React Flow.
 - The project uses Zod for runtime schema validation.
+- `tips-and-experience-tracking.md` is the durable guide to experience evidence, contextual tip selection, known problems, decisions, and possible later solutions.
 - Keyboard shortcut handling uses `@tanstack/react-hotkeys`.
 - The `useLocalStorageState` hook requires a storage key, default value, and Zod schema; accepts stored JSON only when it satisfies that schema; falls back to its schema-validated default when stored data is missing, malformed, or invalid; saves only schema-valid state to browser localStorage; and returns the same state-and-setter tuple as React `useState`.
 - Every state value persisted through `useLocalStorageState` has an explicitly defined Zod schema.
@@ -57,8 +58,10 @@
 - Experience levels never automatically downgrade. The last-used timestamp remains available for a separate future staleness policy.
 - The experience strategy version is part of its localStorage key. Experience v1 uses `visual-thinker.experiences.v1`; a future strategy uses a new key so older evidence remains available for analysis or explicit migration.
 - Raw input events are collapsed into completed, effective interaction episodes before an experience is flagged: one wheel gesture that changes zoom, one middle-button or Space-drag that moves the viewport, or one successfully created double-click node.
-- `maySuggestTip` accepts an ordered array of candidate tip keys, evaluates each tip's own experience-level policy in priority order, and returns the first eligible tip or the empty tip when none is eligible.
-- The scroll-to-zoom and add-node tips are eligible for `not-experienced-yet` and `tried-once`; the pan tip remains eligible through `may-know-it`; no experience tip is eligible at `knows-it`.
+- `maySuggestTip` accepts an ordered array of candidate tip keys, evaluates each tip's experience level and last-used timestamp in priority order, and returns the first eligible tip or the empty tip when none is eligible.
+- A tip is not eligible when its action was used less than 60 seconds ago.
+- A `not-experienced-yet` action is immediately eligible when proposed. A `tried-once` action is suppressed for the remainder of its local calendar day and becomes eligible on a later day because the first use may have been accidental. A `may-know-it` action becomes eligible after one week without use, and a `knows-it` action becomes eligible after one month without use.
+- Tip eligibility policies can vary by experience type while preserving recency suppression and priority evaluation.
 - Every action taught by an experience tip calls `maySuggestTip` after it is successfully performed, passing any next candidate tips in priority order or an empty array when there are no alternatives. When no candidate is eligible, the selected tip key becomes empty and the current tip disappears immediately.
 </area>
 </area>
