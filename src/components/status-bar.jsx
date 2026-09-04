@@ -1,10 +1,7 @@
 const tips = {
-  none: null,
   pan: (
     <>
       <kbd className="font-sans">Space</kbd> + drag or middle-drag to pan
-      <span className="px-1.5">·</span>
-      Trackpad to pan
     </>
   ),
   zoom: <>Scroll to zoom</>,

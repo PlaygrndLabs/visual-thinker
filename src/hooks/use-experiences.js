@@ -191,7 +191,7 @@ export function useExperiences() {
         }
       }
 
-      return 'none'
+      return null
     },
     [experienceLevels],
   )

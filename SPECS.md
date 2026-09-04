@@ -56,9 +56,10 @@
 - `tried-once` represents initial successful use; `may-know-it` represents demonstrated immediate fluency or initial spaced recall; `knows-it` requires durable retention evidence, or maximum practice strength reinforced by delayed recall.
 - Experience levels never automatically downgrade. The last-used timestamp remains available for a separate future staleness policy.
 - The experience strategy version is part of its localStorage key. Experience v1 uses `visual-thinker.experiences.v1`; a future strategy uses a new key so older evidence remains available for analysis or explicit migration.
-- Raw input events are collapsed into completed, effective interaction episodes before an experience is flagged: one wheel gesture that changes zoom, one drag that moves the viewport, or one successfully created double-click node.
+- Raw input events are collapsed into completed, effective interaction episodes before an experience is flagged: one wheel gesture that changes zoom, one middle-button or Space-drag that moves the viewport, or one successfully created double-click node.
 - `maySuggestTip` accepts an ordered array of candidate tip keys, evaluates each tip's own experience-level policy in priority order, and returns the first eligible tip or the empty tip when none is eligible.
 - The scroll-to-zoom and add-node tips are eligible for `not-experienced-yet` and `tried-once`; the pan tip remains eligible through `may-know-it`; no experience tip is eligible at `knows-it`.
+- Every action taught by an experience tip calls `maySuggestTip` after it is successfully performed, passing any next candidate tips in priority order or an empty array when there are no alternatives. When no candidate is eligible, the selected tip key becomes empty and the current tip disappears immediately.
 </area>
 </area>
 
@@ -131,6 +132,7 @@
 - The status bar cross-fades between tips with a CSS transition when its tip-key prop changes.
 - The default status-bar tip is empty.
 - Panning, scrolling to zoom, and double-clicking to add a node have separate tip keys and separate tip text.
+- The pan tip teaches only Space-drag and middle-drag; it does not mention trackpad panning.
 - Experience tips are muted small text without a box style, sit in the middle of the bottom edge, use the available horizontal space, and do not wrap onto another line.
 - Contextual tip requests use `maySuggestTip`; the status bar shows only the highest-priority eligible candidate and remains empty when no candidate is eligible.
 </area>
