@@ -28,6 +28,12 @@
 - Native Cloudflare Pages Git integration is the only deployment path; the repository contains no manual Cloudflare deployment tooling or configuration.
 </area>
 
+<area name="Repository presentation">
+- The GitHub repository is public.
+- The GitHub repository About section describes Visual Thinker as a spacious visual playground for creating, connecting, rearranging, and exploring ideas, and links to `https://visual-thinker.pages.dev/`.
+- `README.md` is a polished, representative introduction to Visual Thinker that communicates its purpose and interaction model, prominently links to the live app, visually represents the product, and provides accurate local-development, build, deployment, and contribution guidance.
+</area>
+
 <area name="Basic brainstorm diagramming">
 - The canvas has interactive mouse- and keyboard-based basic brainstorm diagramming tools.
 - Idea nodes support multiline text, fit their text content in both dimensions, retain a small minimum width of 6rem, show at most five text lines at once, and scroll vertically for additional lines.
