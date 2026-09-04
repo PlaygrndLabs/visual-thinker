@@ -51,7 +51,7 @@
 
 <area name="Experience memory">
 - The app remembers the user's familiarity with known experiencable actions so routine guidance can become simpler and disappear as the user demonstrates knowledge.
-- Known experiences include scrolling to zoom, panning the canvas through middle-button drag or Space-drag, and creating a node through canvas double-click.
+- Known experiences include scrolling to zoom, panning the canvas through middle-button drag or Space-drag, creating a node through canvas double-click, and removing a connection through connection double-click.
 - All experience observations are handled by the `flagExperience` function returned from the custom `useExperiences` hook; the hook also returns every known experience's current level and stored evidence and a `maySuggestTip` function for contextual guidance.
 - Each experience has one of four monotonic levels: `not-experienced-yet`, `tried-once`, `may-know-it`, or `knows-it`.
 - Each experience stores its level, its last-used date/time timestamp, and bounded evidence of immediate practice and successful recall after a delay; it does not store individual use timestamps or an unbounded lifetime usage count.
@@ -61,7 +61,7 @@
 - `tried-once` represents initial successful use; `may-know-it` represents demonstrated immediate fluency or initial spaced recall; `knows-it` requires durable retention evidence, or maximum practice strength reinforced by delayed recall.
 - Experience levels never automatically downgrade. The last-used timestamp remains available for a separate future staleness policy.
 - The experience strategy version is part of its localStorage key. Experience v1 uses `visual-thinker.experiences.v1`; a future strategy uses a new key so older evidence remains available for analysis or explicit migration.
-- Raw input events are collapsed into completed, effective interaction episodes before an experience is flagged: one wheel gesture that changes zoom, one middle-button or Space-drag that moves the viewport, or one successfully created double-click node.
+- Raw input events are collapsed into completed, effective interaction episodes before an experience is flagged: one wheel gesture that changes zoom, one middle-button or Space-drag that moves the viewport, one successfully created double-click node, or one connection successfully removed by double-click.
 - `maySuggestTip` accepts an ordered array of candidate tip keys, evaluates each tip's experience level and last-used timestamp in priority order, and returns the first eligible tip or the empty tip when none is eligible.
 - A tip is not eligible when its action was used less than 60 seconds ago.
 - A `not-experienced-yet` action is immediately eligible when proposed. A `tried-once` action is suppressed for the remainder of its local calendar day and becomes eligible on a later day because the first use may have been accidental. A `may-know-it` action becomes eligible after one week without use, and a `knows-it` action becomes eligible after one month without use.
@@ -79,6 +79,9 @@
 - Double-clicking empty canvas does not create a node when the proposed node would be more than 50% outside the visible canvas viewport horizontally or vertically; a node that remains exactly 50% visible on both axes can be created.
 - When an idea node's text box loses focus with empty text, the node and its connections are deleted.
 - A connection remains the pointer target while hovered and uses a hand cursor; double-clicking it breaks the connection without creating a node.
+- Successfully creating a connection calls `maySuggestTip([removeConnection])` and displays “Double click a connection to break it” when that tip is eligible.
+- A deliberate single click on a connection requests the connection-removal tip after the double-click interval has elapsed; a double-click cancels that pending request.
+- Successfully removing a connection by double-click flags the connection-removal experience, records whether its tip was visible, and calls `maySuggestTip([])` to clear the tip.
 - Empty canvas space uses the normal arrow mouse cursor when Space is not held.
 - Starting a primary-button drag cancels node creation and draws a selection rectangle.
 - The selection rectangle has the translucent blue fill and crisp, solid blue outline associated with the Windows XP Explorer and desktop selection rectangle; its border is not dotted or dashed.
@@ -152,7 +155,7 @@
 - A dedicated `StatusBar` component displays the active canvas tip from a tip-key prop and owns the text associated with each tip key.
 - The status bar cross-fades between tips with a CSS transition when its tip-key prop changes.
 - The default status-bar tip is empty.
-- Panning, scrolling to zoom, and double-clicking to add a node have separate tip keys and separate tip text.
+- Panning, scrolling to zoom, double-clicking to add a node, and double-clicking to remove a connection have separate tip keys and separate tip text.
 - The pan tip teaches only Space-drag and middle-drag; it does not mention trackpad panning.
 - Experience tips are muted small text without a box style, sit in the middle of the bottom edge, use the available horizontal space, and do not wrap onto another line.
 - Status-bar tip text has a pronounced, wide canvas-colored outer glow that extends visibly beyond the immediate glyph edges, separates it from overlapping canvas content, and makes it read as floating above that content.

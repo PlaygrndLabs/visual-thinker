@@ -56,8 +56,21 @@ const experienceRecordV1Schema = z.object({
   longestSuccessfulGapMs: z.number().int().nonnegative(),
 })
 
+export const emptyExperienceRecordV1 = {
+  expLevel: 'not-experienced-yet',
+  lastUsedAt: null,
+  practiceStrength: 0,
+  currentBoutUseCount: 0,
+  retentionStrength: 0,
+  spacedReturnCount: 0,
+  longestSuccessfulGapMs: 0,
+}
+
 export const experiencesV1Schema = z.object({
   'canvas-scroll-zoom': experienceRecordV1Schema,
   'canvas-pan': experienceRecordV1Schema,
   'create-node-by-double-click': experienceRecordV1Schema,
+  'remove-connection-by-double-click': experienceRecordV1Schema.default(
+    emptyExperienceRecordV1,
+  ),
 })
