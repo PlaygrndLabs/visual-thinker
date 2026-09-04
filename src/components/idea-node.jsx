@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Handle, Position, useReactFlow } from '@xyflow/react'
+import { Handle, Position, useConnection, useReactFlow } from '@xyflow/react'
 
 import { useCanvasHistoryTransaction } from '@/contexts/canvas-history-context'
 
@@ -13,6 +13,9 @@ const handlePositions = [
 export function IdeaNode({ id, data, selected }) {
   const inputRef = useRef(null)
   const [isEditing, setIsEditing] = useState(false)
+  const connectionInProgress = useConnection(
+    (connection) => connection.inProgress,
+  )
   const { updateNodeData } = useReactFlow()
   const {
     beginTransaction,
@@ -57,7 +60,11 @@ export function IdeaNode({ id, data, selected }) {
           type="source"
           position={position}
           className={`!h-3 !w-3 !border-2 !border-card !bg-primary transition-opacity ${
-            selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            connectionInProgress
+              ? '!opacity-0'
+              : selected
+                ? 'opacity-100'
+                : 'opacity-0 group-hover:opacity-100'
           }`}
         />
       ))}

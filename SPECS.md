@@ -41,6 +41,7 @@
 - Idea nodes support multiline text, fit their text content in both dimensions, retain a small minimum width of 6rem, show at most five text lines at once, and scroll vertically for additional lines.
 - Every idea node exposes its text through an accessible multiline text field.
 - A new connection starts by dragging from a handle on a node edge, but its dragged end can be released anywhere inside another node without targeting a handle.
+- Node-edge handles are visible as drag-start affordances before a connection begins, but every handle dot stays hidden for the full duration of an active connection drag, including on its source node and the hovered target node; automatic nearest-edge selection and snapping remain visually represented by the shadow line alone.
 - While a new connection's dragged end crosses empty canvas, its shadow line automatically starts from whichever source-node edge handle is nearest the pointer.
 - While the dragged end of a new connection is inside a node or within its connection-snapping radius, both ends of its shadow line snap to the same source-and-destination edge pair selected by automatic routing for the completed connection, independently of the pointer's location or the physical handle nearest the pointer; releasing the connection does not change either endpoint.
 - Connections have no input or output direction: the top, right, bottom, and left handles on every idea node have equal meaning and can each start or end a connection.
