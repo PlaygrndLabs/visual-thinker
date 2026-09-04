@@ -1,34 +1,6 @@
 import { getBezierPath, useStore } from '@xyflow/react'
 
-import {
-  getAutomaticHandles,
-  getNodeBounds,
-  getNodeHandlePoint,
-} from '@/lib/connection-routing'
-
-function getNodeAtPoint(nodeLookup, point, sourceNodeId) {
-  let targetNode = null
-
-  for (const node of nodeLookup.values()) {
-    if (node.id === sourceNodeId || node.hidden) continue
-
-    const bounds = getNodeBounds(node)
-    const containsPoint =
-      point.x >= bounds.left &&
-      point.x <= bounds.right &&
-      point.y >= bounds.top &&
-      point.y <= bounds.bottom
-
-    if (
-      containsPoint &&
-      (!targetNode || node.internals.z >= targetNode.internals.z)
-    ) {
-      targetNode = node
-    }
-  }
-
-  return targetNode
-}
+import { getAutomaticHandles } from '@/lib/connection-routing'
 
 export function AutomaticConnectionLine({
   connectionLineStyle,
@@ -42,31 +14,46 @@ export function AutomaticConnectionLine({
   toY,
 }) {
   const nodeLookup = useStore((state) => state.nodeLookup)
-  const transform = useStore((state) => state.transform)
-  const [translateX, translateY, zoom] = transform
-  const pointerInFlow = {
-    x: (pointer.x - translateX) / zoom,
-    y: (pointer.y - translateY) / zoom,
-  }
-  const targetNode = getNodeAtPoint(
-    nodeLookup,
-    pointerInFlow,
-    fromNode.id,
-  )
+  const flowElement = useStore((state) => state.domNode)
+  const flowBounds = flowElement?.getBoundingClientRect()
+  const targetNodeElement = flowBounds
+    ? document
+        .elementsFromPoint(
+          pointer.x + flowBounds.left,
+          pointer.y + flowBounds.top,
+        )
+        .map((element) => element.closest('.react-flow__node'))
+        .find(
+          (element) =>
+            element && element.getAttribute('data-id') !== fromNode.id,
+        )
+    : null
+  const targetNode = targetNodeElement
+    ? nodeLookup.get(targetNodeElement.getAttribute('data-id'))
+    : null
 
   if (targetNode) {
     const automaticTargetPosition = getAutomaticHandles(
       fromNode,
       targetNode,
     ).targetHandle
-    const automaticTargetPoint = getNodeHandlePoint(
-      targetNode,
-      automaticTargetPosition,
+    const automaticTargetHandle = targetNodeElement.querySelector(
+      `.react-flow__handle.source[data-handleid="${automaticTargetPosition}"]`,
     )
+    const automaticTargetBounds =
+      automaticTargetHandle?.getBoundingClientRect()
 
-    toX = automaticTargetPoint.x
-    toY = automaticTargetPoint.y
-    toPosition = automaticTargetPosition
+    if (automaticTargetBounds) {
+      toX =
+        automaticTargetBounds.left +
+        automaticTargetBounds.width / 2 -
+        flowBounds.left
+      toY =
+        automaticTargetBounds.top +
+        automaticTargetBounds.height / 2 -
+        flowBounds.top
+      toPosition = automaticTargetPosition
+    }
   }
 
   const [path] = getBezierPath({

@@ -609,10 +609,6 @@ function ThinkingCanvas() {
               connectionMode={ConnectionMode.Loose}
               connectionRadius={28}
               connectionLineComponent={AutomaticConnectionLine}
-              connectionLineStyle={{
-                stroke: 'var(--primary)',
-                strokeWidth: 2,
-              }}
               defaultEdgeOptions={{
                 type: 'default',
                 style: { stroke: 'var(--primary)', strokeWidth: 2 },
