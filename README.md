@@ -80,3 +80,7 @@ Every push to `main` is deployed automatically to [Cloudflare Pages](https://vis
 ## Contributing
 
 Ideas, bug reports, and focused pull requests are welcome. Start with an [issue](https://github.com/PlaygrndLabs/visual-thinker/issues) when a change would benefit from a little design discussion first.
+
+## License
+
+Visual Thinker is open source under the [MIT License](LICENSE). © 2026 PlaygrndLabs.
