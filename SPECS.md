@@ -27,6 +27,7 @@
 <area name="Basic brainstorm diagramming">
 - The canvas has interactive mouse- and keyboard-based basic brainstorm diagramming tools.
 - Nodes can be easily connected by dragging their handles.
+- Connections have no input or output direction: the top, right, bottom, and left handles on every idea node have equal meaning and can each start or end a connection.
 - Connections between nodes render as smooth curved lines without straight segments or elbows.
 </area>
 

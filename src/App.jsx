@@ -6,6 +6,7 @@ import {
   applyNodeChanges,
   Background,
   BackgroundVariant,
+  ConnectionMode,
   Panel,
   ReactFlow,
   ReactFlowProvider,
@@ -142,7 +143,14 @@ function ThinkingCanvas() {
 
   useEffect(() => {
     setCanvas((currentCanvas) => {
-      if (currentCanvas.edges.every((edge) => edge.type === 'default')) {
+      const needsMigration = currentCanvas.edges.some(
+        (edge) =>
+          edge.type !== 'default' ||
+          edge.sourceHandle == null ||
+          edge.targetHandle == null,
+      )
+
+      if (!needsMigration) {
         return currentCanvas
       }
 
@@ -151,6 +159,8 @@ function ThinkingCanvas() {
         edges: currentCanvas.edges.map((edge) => ({
           ...edge,
           type: 'default',
+          sourceHandle: edge.sourceHandle ?? 'right',
+          targetHandle: edge.targetHandle ?? 'left',
         })),
       }
     })
@@ -473,6 +483,7 @@ function ThinkingCanvas() {
               onMoveStart={handleMoveStart}
               onMoveEnd={handleMoveEnd}
               onPaneClick={onPaneClick}
+              connectionMode={ConnectionMode.Loose}
               connectionRadius={28}
               defaultEdgeOptions={{
                 type: 'default',

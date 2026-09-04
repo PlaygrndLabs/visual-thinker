@@ -3,6 +3,13 @@ import { Handle, Position, useReactFlow } from '@xyflow/react'
 
 import { useCanvasHistoryTransaction } from '@/contexts/canvas-history-context'
 
+const handlePositions = [
+  Position.Top,
+  Position.Right,
+  Position.Bottom,
+  Position.Left,
+]
+
 export function IdeaNode({ id, data, selected }) {
   const inputRef = useRef(null)
   const { updateNodeData } = useReactFlow()
@@ -25,13 +32,17 @@ export function IdeaNode({ id, data, selected }) {
           : 'border-border'
       }`}
     >
-      <Handle
-        type="target"
-        position={Position.Left}
-        className={`!h-3 !w-3 !border-2 !border-card !bg-primary transition-opacity ${
-          selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-        }`}
-      />
+      {handlePositions.map((position) => (
+        <Handle
+          key={position}
+          id={position}
+          type="source"
+          position={position}
+          className={`!h-3 !w-3 !border-2 !border-card !bg-primary transition-opacity ${
+            selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          }`}
+        />
+      ))}
       <input
         ref={inputRef}
         className="nodrag nowheel block w-full bg-transparent text-sm font-medium text-card-foreground outline-none placeholder:text-muted-foreground"
@@ -45,13 +56,6 @@ export function IdeaNode({ id, data, selected }) {
           }
         }}
         aria-label="Idea text"
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        className={`!h-3 !w-3 !border-2 !border-card !bg-primary transition-opacity ${
-          selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-        }`}
       />
     </div>
   )
