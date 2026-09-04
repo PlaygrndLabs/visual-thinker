@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from '@tanstack/react-hotkeys'
 import {
   addEdge,
@@ -31,6 +31,7 @@ import { useLocalStorageState } from '@/hooks/use-local-storage-state'
 const nodeTypes = { idea: IdeaNode }
 const canvasStorageKey = 'visual-thinker.canvas.v1'
 const viewportStorageKey = 'visual-thinker.viewport.v1'
+const paneDoubleClickDelay = 500
 const emptyCanvas = { nodes: [], edges: [] }
 const defaultViewport = { x: 0, y: 0, zoom: 1 }
 const defaultViewportState = {
@@ -43,6 +44,7 @@ const canvasSelectionStyles = String.raw`
   [&_.react-flow\_\_nodesselection-rect]:[--xy-selection-border:none]
   [&_.react-flow\_\_selection]:[--xy-selection-background-color:rgb(49_106_197_/_0.15)]
   [&_.react-flow\_\_selection]:[--xy-selection-border:1px_solid_#316ac5]
+  [&_.react-flow\_\_pane]:cursor-default!
 `
 
 function ThinkingCanvas() {
@@ -61,6 +63,7 @@ function ThinkingCanvas() {
   )
   const [logoResetKey, setLogoResetKey] = useState(0)
   const [statusBarTip, setStatusBarTip] = useState('navigation')
+  const pendingPaneClick = useRef(null)
   const selectedViewport = useMemo(
     () => ({
       x: viewportState.x,
@@ -116,17 +119,29 @@ function ThinkingCanvas() {
 
   const onPaneClick = useCallback((event) => {
     if (event.button !== 0) return
-    setStatusBarTip('add-node')
+
+    clearTimeout(pendingPaneClick.current)
+    pendingPaneClick.current = setTimeout(() => {
+      setStatusBarTip('add-node')
+      pendingPaneClick.current = null
+    }, paneDoubleClickDelay)
   }, [])
 
   const onPaneDoubleClick = useCallback(
     (event) => {
       if (event.button !== 0) return
       if (!event.target.classList.contains('react-flow__pane')) return
+      clearTimeout(pendingPaneClick.current)
+      pendingPaneClick.current = null
       createIdeaAtScreenPoint({ x: event.clientX, y: event.clientY })
       setStatusBarTip('navigation')
     },
     [createIdeaAtScreenPoint],
+  )
+
+  useEffect(
+    () => () => clearTimeout(pendingPaneClick.current),
+    [],
   )
 
   const onNodesChange = useCallback(
