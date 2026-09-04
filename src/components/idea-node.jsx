@@ -66,9 +66,40 @@ export function IdeaNode({ id, data, selected }) {
         onChange={(event) => updateNodeData(id, { label: event.target.value })}
         onFocus={beginTransaction}
         onKeyDown={(event) => {
+          if (event.nativeEvent.isComposing) return
+
           if (event.key === 'Escape') {
+            event.preventDefault()
             event.currentTarget.blur()
+            return
           }
+
+          if (event.key !== 'Enter') return
+
+          event.preventDefault()
+
+          if (
+            !event.metaKey &&
+            !event.ctrlKey &&
+            !event.shiftKey &&
+            !event.altKey
+          ) {
+            event.currentTarget.blur()
+            return
+          }
+
+          const { selectionEnd, selectionStart, value } = event.currentTarget
+          const nextCursorPosition = selectionStart + 1
+
+          updateNodeData(id, {
+            label: `${value.slice(0, selectionStart)}\n${value.slice(selectionEnd)}`,
+          })
+          requestAnimationFrame(() => {
+            inputRef.current?.setSelectionRange(
+              nextCursorPosition,
+              nextCursorPosition,
+            )
+          })
         }}
         aria-label="Idea text"
       />
