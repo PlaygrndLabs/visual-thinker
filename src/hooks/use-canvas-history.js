@@ -25,10 +25,11 @@ function snapshotsMatch(first, second) {
   return JSON.stringify(first) === JSON.stringify(second)
 }
 
-export function useCanvasHistory(storageKey, initialCanvas) {
+export function useCanvasHistory(storageKey, initialCanvas, schema) {
   const [canvas, setCanvasState] = useLocalStorageState(
     storageKey,
     initialCanvas,
+    schema,
   )
   const canvasRef = useRef(canvas)
   const pastRef = useRef([])

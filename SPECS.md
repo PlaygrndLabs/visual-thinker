@@ -11,8 +11,10 @@
 <area name="Foundation">
 - The project uses Bun.
 - The project includes Storybook, shadcn, and React Flow.
+- The project uses Zod for runtime schema validation.
 - Keyboard shortcut handling uses `@tanstack/react-hotkeys`.
-- The `useLocalStorageState` hook accepts a storage key and default value, loads JSON state from browser localStorage on page load, saves state changes back to localStorage, and returns the same state-and-setter tuple as React `useState`.
+- The `useLocalStorageState` hook requires a storage key, default value, and Zod schema; accepts stored JSON only when it satisfies that schema; falls back to its schema-validated default when stored data is missing, malformed, or invalid; saves only schema-valid state to browser localStorage; and returns the same state-and-setter tuple as React `useState`.
+- Every state value persisted through `useLocalStorageState` has an explicitly defined Zod schema.
 - The app page is a full-screen React Flow canvas.
 - The project can run locally with `make dev`, which uses Bun.
 - Visual Thinker is deployed through a Cloudflare Pages project in the PlaygrndLabs Cloudflare account at `https://visual-thinker.pages.dev/`.

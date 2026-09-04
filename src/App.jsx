@@ -28,6 +28,10 @@ import { useCanvasHistory } from '@/hooks/use-canvas-history'
 import { useCanvasClipboard } from '@/hooks/use-canvas-clipboard'
 import { useLocalStorageState } from '@/hooks/use-local-storage-state'
 import { useWheelIntent } from '@/hooks/use-wheel-intent'
+import {
+  canvasSchema,
+  viewportStateSchema,
+} from '@/schemas/storage-schemas'
 
 const nodeTypes = { idea: IdeaNode }
 const canvasStorageKey = 'visual-thinker.canvas.v1'
@@ -57,10 +61,11 @@ function ThinkingCanvas() {
     setCanvas,
     undo,
     updateCanvas,
-  } = useCanvasHistory(canvasStorageKey, emptyCanvas)
+  } = useCanvasHistory(canvasStorageKey, emptyCanvas, canvasSchema)
   const [viewportState, setViewportState] = useLocalStorageState(
     viewportStorageKey,
     defaultViewportState,
+    viewportStateSchema,
   )
   const [logoResetKey, setLogoResetKey] = useState(0)
   const [statusBarTip, setStatusBarTip] = useState('navigation')
