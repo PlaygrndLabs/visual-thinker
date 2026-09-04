@@ -163,6 +163,8 @@
 - The canvas context menu provides Add node, Select all, and Paste actions.
 - Add node displays Dbl Click as its shortcut indicator and has no single-key keyboard shortcut.
 - Paste is disabled when neither the internal canvas clipboard nor readable external plain text contains pasteable content; Select all is disabled when there are no nodes; Clear is disabled when the canvas is already empty.
+- A successful paste does not consume or disable the clipboard content; users can paste copied content multiple times.
+- Paste from the canvas context menu targets the canvas x/y point where the context menu was opened, centering pasted nodes around that point.
 - Context-menu actions display their keyboard shortcut indicators as a contextual feature aligned to the right side of each menu item.
 - Context-menu shortcut indicators are operating-system dependent: Mac shortcuts appear on Macs, and Windows shortcuts appear on every other operating system.
 - The context menu provides a Clear action that removes every node and edge, restores the default pan and zoom, exits the fitted view, and makes the logo visible without clearing or changing experience tracks.

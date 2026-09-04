@@ -107,9 +107,40 @@ export function useCanvasClipboard(
     return getClipboardText(selection)
   }, [canvas, updateCanvas])
 
-  const pasteCanvasItems = useCallback((clipboard) => {
-    pasteCountRef.current += 1
-    const offset = pasteOffset * pasteCountRef.current
+  const pasteCanvasItems = useCallback((clipboard, screenPoint = null) => {
+    const targetPosition = screenPoint
+      ? screenToFlowPosition(screenPoint)
+      : null
+    const clipboardCenter = clipboard.nodes.length > 0
+      ? {
+          x:
+            (Math.min(...clipboard.nodes.map((node) => node.position.x)) +
+              Math.max(
+                ...clipboard.nodes.map(
+                  (node) => node.position.x + (node.width ?? ideaWidth),
+                ),
+              )) /
+            2,
+          y:
+            (Math.min(...clipboard.nodes.map((node) => node.position.y)) +
+              Math.max(
+                ...clipboard.nodes.map(
+                  (node) => node.position.y + (node.height ?? ideaHeight),
+                ),
+              )) /
+            2,
+        }
+      : null
+    const translation = targetPosition && clipboardCenter
+      ? {
+          x: targetPosition.x - clipboardCenter.x,
+          y: targetPosition.y - clipboardCenter.y,
+        }
+      : (() => {
+          pasteCountRef.current += 1
+          const offset = pasteOffset * pasteCountRef.current
+          return { x: offset, y: offset }
+        })()
 
     updateCanvas((currentCanvas) => {
       const nodeIdMap = new Map(
@@ -126,8 +157,8 @@ export function useCanvasClipboard(
         ...structuredClone(node),
         id: nodeIdMap.get(node.id),
         position: {
-          x: node.position.x + offset,
-          y: node.position.y + offset,
+          x: node.position.x + translation.x,
+          y: node.position.y + translation.y,
         },
         selected: true,
         data: { ...structuredClone(node.data), autofocus: false },
@@ -163,10 +194,10 @@ export function useCanvasClipboard(
         ],
       }
     })
-  }, [updateCanvas])
+  }, [screenToFlowPosition, updateCanvas])
 
   const pastePlainText = useCallback(
-    (text) => {
+    (text, screenPoint = null) => {
       const labels = text
         .split(/\r\n?|\n/)
         .map((line) => line.trim())
@@ -174,10 +205,12 @@ export function useCanvasClipboard(
 
       if (labels.length === 0) return false
 
-      const center = screenToFlowPosition({
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
-      })
+      const center = screenToFlowPosition(
+        screenPoint ?? {
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        },
+      )
       const step = ideaHeight + pastedIdeaGap
       const startY = center.y - ideaHeight / 2 - ((labels.length - 1) * step) / 2
 
@@ -209,9 +242,9 @@ export function useCanvasClipboard(
     [screenToFlowPosition, updateCanvas],
   )
 
-  const pasteSelection = useCallback(async () => {
+  const pasteSelection = useCallback(async (screenPoint = null) => {
     if (clipboardRef.current) {
-      pasteCanvasItems(clipboardRef.current)
+      pasteCanvasItems(clipboardRef.current, screenPoint)
       return true
     }
 
@@ -219,7 +252,7 @@ export function useCanvasClipboard(
 
     try {
       const text = await navigator.clipboard.readText()
-      return pastePlainText(text)
+      return pastePlainText(text, screenPoint)
     } catch {
       return false
     }
