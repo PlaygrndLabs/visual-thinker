@@ -30,7 +30,8 @@
 <area name="Basic brainstorm diagramming">
 - The canvas has interactive mouse- and keyboard-based basic brainstorm diagramming tools.
 - Idea nodes fit their text content and retain a small minimum width of 6rem.
-- Nodes can be easily connected by dragging their handles.
+- A new connection starts by dragging from a handle on a node edge, but its dragged end can be released anywhere inside another node without targeting a handle.
+- While the dragged end of a new connection is inside a node, it snaps to the node edge nearest the source node according to automatic connection routing, independently of where the pointer entered or is released within the destination node.
 - Connections have no input or output direction: the top, right, bottom, and left handles on every idea node have equal meaning and can each start or end a connection.
 - Each pair of distinct idea nodes can have at most one connection, regardless of the handles or direction used to create it; duplicate connection attempts do not add overlapping lines.
 - Each connection automatically uses the facing handle pair that best matches the current positions of its nodes and updates its handles whenever either connected node moves.
