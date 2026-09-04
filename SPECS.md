@@ -77,6 +77,9 @@
 - Pressing the primary mouse button on empty canvas is provisional and does not itself create a node or perform another definitive action.
 - Clicking empty canvas does not create a node. After enough time has passed to know the interaction is not a double-click, the status bar requests add-node guidance first and pan guidance second through `maySuggestTip`.
 - Double-clicking empty canvas creates an editable idea node with empty text whose top-left corner is offset slightly to the right and below the pointer in screen space, focuses its text box for immediate typing, and clears the status-bar tip.
+- Canvas clicks form a double- or triple-click sequence only when each next click begins within 500 milliseconds and no more than 5 screen pixels away on either axis; the same time and position thresholds govern both sequences.
+- A third click at the source point of a newly created, still-empty idea is ignored when it belongs to that creation click sequence, so the idea stays visible and focused without blinking away.
+- A click outside a newly created empty idea ends editing and removes the idea when it falls outside either the multi-click time threshold or the multi-click position threshold.
 - Double-clicking empty canvas does not create a node when the proposed node would be more than 50% outside the visible canvas viewport horizontally or vertically; a node that remains exactly 50% visible on both axes can be created.
 - When an idea node's text box loses focus with empty text, the node and its connections are deleted.
 - A connection remains the pointer target while hovered and uses a hand cursor; double-clicking it breaks the connection without creating a node.

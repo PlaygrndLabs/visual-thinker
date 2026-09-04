@@ -16,8 +16,7 @@ export function IdeaNode({ id, data, selected }) {
   const { updateNodeData } = useReactFlow()
   const {
     beginTransaction,
-    commitTransaction,
-    deleteNode,
+    finishIdeaEditing,
     finishNodeAutofocus,
     pendingFocusNodeId,
   } = useCanvasHistoryTransaction()
@@ -72,12 +71,7 @@ export function IdeaNode({ id, data, selected }) {
         readOnly={!isEditing}
         onBlur={(event) => {
           setIsEditing(false)
-
-          if (event.currentTarget.value === '') {
-            deleteNode(id)
-          }
-
-          commitTransaction()
+          finishIdeaEditing(id, event.currentTarget.value)
         }}
         onChange={(event) => updateNodeData(id, { label: event.target.value })}
         onFocus={() => {

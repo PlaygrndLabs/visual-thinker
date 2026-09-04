@@ -44,7 +44,8 @@ import {
 const nodeTypes = { idea: IdeaNode }
 const canvasStorageKey = 'visual-thinker.canvas.v1'
 const viewportStorageKey = 'visual-thinker.viewport.v1'
-const paneDoubleClickDelay = 500
+const multiClickDelay = 500
+const multiClickMaxOffset = 5
 const newNodePointerOffset = 12
 const newIdeaNodeSize = { width: 96, height: 38 }
 const completedPanDistance = 3
@@ -71,6 +72,17 @@ function didViewportPan(startViewport, endViewport) {
       endViewport.x - startViewport.x,
       endViewport.y - startViewport.y,
     ) > completedPanDistance
+  )
+}
+
+function clicksBelongToSameSequence(firstClick, nextClick) {
+  const elapsed = nextClick.timeStamp - firstClick.timeStamp
+
+  return (
+    elapsed >= 0 &&
+    elapsed <= multiClickDelay &&
+    Math.abs(nextClick.x - firstClick.x) <= multiClickMaxOffset &&
+    Math.abs(nextClick.y - firstClick.y) <= multiClickMaxOffset
   )
 }
 
@@ -141,6 +153,9 @@ function ThinkingCanvas() {
   const [statusBarTip, setStatusBarTip] = useState(null)
   const pendingEdgeClick = useRef(null)
   const pendingPaneClick = useRef(null)
+  const newNodeClickSequence = useRef(null)
+  const suppressNextPaneClick = useRef(false)
+  const suppressPaneClickReset = useRef(null)
   const mousePanStartViewport = useRef(null)
   const zoomGestureStartZoom = useRef(null)
   const { flagExperience, maySuggestTip } = useExperiences()
@@ -281,23 +296,27 @@ function ThinkingCanvas() {
     onZoomStart: startWheelZoom,
   })
 
-  const createIdea = useCallback((position) => {
-    const id = `idea-${crypto.randomUUID()}`
+  const createIdea = useCallback(
+    (position) => {
+      const id = `idea-${crypto.randomUUID()}`
 
-    updateCanvas((currentCanvas) => ({
-      ...currentCanvas,
-      nodes: [
-        ...currentCanvas.nodes,
-        {
-          id,
-          type: 'idea',
-          position,
-          data: { label: '' },
-        },
-      ],
-    }))
-    setPendingFocusNodeId(id)
-  }, [updateCanvas])
+      updateCanvas((currentCanvas) => ({
+        ...currentCanvas,
+        nodes: [
+          ...currentCanvas.nodes,
+          {
+            id,
+            type: 'idea',
+            position,
+            data: { label: '' },
+          },
+        ],
+      }))
+      setPendingFocusNodeId(id)
+      return id
+    },
+    [updateCanvas],
+  )
 
   const finishNodeAutofocus = useCallback((id) => {
     setPendingFocusNodeId((currentId) => (currentId === id ? null : currentId))
@@ -315,18 +334,28 @@ function ThinkingCanvas() {
     [setCanvas],
   )
 
+  const finishIdeaEditing = useCallback(
+    (id, label) => {
+      if (label === '') {
+        deleteNode(id)
+      }
+
+      commitTransaction()
+    },
+    [commitTransaction, deleteNode],
+  )
+
   const createIdeaAtScreenPoint = useCallback(
     ({ x, y }, canvasBounds) => {
       if (!isNewIdeaMostlyVisible({ x, y }, canvasBounds, getViewport().zoom)) {
-        return false
+        return null
       }
 
       const position = screenToFlowPosition({
         x: x + newNodePointerOffset,
         y: y + newNodePointerOffset,
       })
-      createIdea(position)
-      return true
+      return createIdea(position)
     },
     [createIdea, getViewport, screenToFlowPosition],
   )
@@ -335,33 +364,41 @@ function ThinkingCanvas() {
     (event) => {
       if (event.button !== 0) return
 
-      clearTimeout(pendingPaneClick.current)
-      pendingPaneClick.current = setTimeout(() => {
+      const click = {
+        x: event.clientX,
+        y: event.clientY,
+        timeStamp: event.timeStamp,
+      }
+      const previousClick = pendingPaneClick.current
+
+      if (previousClick && clicksBelongToSameSequence(previousClick, click)) {
+        clearTimeout(previousClick.timeoutId)
+        pendingPaneClick.current = null
+        const nodeId = createIdeaAtScreenPoint(
+          click,
+          event.target.getBoundingClientRect(),
+        )
+        if (!nodeId) return
+
+        newNodeClickSequence.current = { ...click, nodeId }
+        flagExperience(knownExperiences.createNodeByDoubleClick, {
+          prompted: visibleStatusBarTip === experienceTips.addNode,
+        })
+        setStatusBarTip(maySuggestTip([]))
+        return
+      }
+
+      clearTimeout(previousClick?.timeoutId)
+      const pendingClick = { ...click, timeoutId: null }
+      pendingClick.timeoutId = setTimeout(() => {
+        if (pendingPaneClick.current !== pendingClick) return
+
         setStatusBarTip(
           maySuggestTip([experienceTips.addNode, experienceTips.pan]),
         )
         pendingPaneClick.current = null
-      }, paneDoubleClickDelay)
-    },
-    [maySuggestTip],
-  )
-
-  const onPaneDoubleClick = useCallback(
-    (event) => {
-      if (event.button !== 0) return
-      if (!event.target.classList.contains('react-flow__pane')) return
-      clearTimeout(pendingPaneClick.current)
-      pendingPaneClick.current = null
-      const didCreateIdea = createIdeaAtScreenPoint(
-        { x: event.clientX, y: event.clientY },
-        event.target.getBoundingClientRect(),
-      )
-      if (!didCreateIdea) return
-
-      flagExperience(knownExperiences.createNodeByDoubleClick, {
-        prompted: visibleStatusBarTip === experienceTips.addNode,
-      })
-      setStatusBarTip(maySuggestTip([]))
+      }, multiClickDelay)
+      pendingPaneClick.current = pendingClick
     },
     [
       createIdeaAtScreenPoint,
@@ -370,6 +407,74 @@ function ThinkingCanvas() {
       visibleStatusBarTip,
     ],
   )
+
+  const onCanvasPointerDownCapture = useCallback(
+    (event) => {
+      const creationClick = newNodeClickSequence.current
+      const pointerClick = {
+        x: event.clientX,
+        y: event.clientY,
+        timeStamp: event.timeStamp,
+      }
+      const creationNode = creationClick
+        ? [...document.querySelectorAll('.react-flow__node')].find(
+            (node) => node.getAttribute('data-id') === creationClick.nodeId,
+          )
+        : null
+      const creationTextarea = creationNode?.querySelector('textarea')
+      const isOutsideCreationNode =
+        creationTextarea && !creationNode.contains(event.target)
+      const isBenignThirdClick =
+        event.button === 0 &&
+        isOutsideCreationNode &&
+        creationTextarea.value === '' &&
+        clicksBelongToSameSequence(creationClick, pointerClick)
+
+      if (isBenignThirdClick) {
+        event.preventDefault()
+        event.stopPropagation()
+        newNodeClickSequence.current = null
+        suppressNextPaneClick.current = true
+        clearTimeout(suppressPaneClickReset.current)
+        suppressPaneClickReset.current = setTimeout(() => {
+          suppressNextPaneClick.current = false
+          suppressPaneClickReset.current = null
+        }, 0)
+        return
+      }
+
+      if (isOutsideCreationNode) {
+        newNodeClickSequence.current = null
+        finishIdeaEditing(creationClick.nodeId, creationTextarea.value)
+        creationTextarea.blur()
+        return
+      }
+
+      const activeTextarea = document.activeElement
+      if (!activeTextarea?.matches('.react-flow__node-idea textarea')) return
+
+      const activeNode = activeTextarea.closest('.react-flow__node')
+      if (!activeNode || activeNode.contains(event.target)) return
+
+      newNodeClickSequence.current = null
+      finishIdeaEditing(
+        activeNode.getAttribute('data-id'),
+        activeTextarea.value,
+      )
+      activeTextarea.blur()
+    },
+    [finishIdeaEditing],
+  )
+
+  const onCanvasClickCapture = useCallback((event) => {
+    if (!suppressNextPaneClick.current) return
+
+    event.preventDefault()
+    event.stopPropagation()
+    suppressNextPaneClick.current = false
+    clearTimeout(suppressPaneClickReset.current)
+    suppressPaneClickReset.current = null
+  }, [])
 
   const onEdgeClick = useCallback(
     (event) => {
@@ -381,7 +486,7 @@ function ThinkingCanvas() {
           maySuggestTip([experienceTips.removeConnection]),
         )
         pendingEdgeClick.current = null
-      }, paneDoubleClickDelay)
+      }, multiClickDelay)
     },
     [maySuggestTip],
   )
@@ -425,7 +530,8 @@ function ThinkingCanvas() {
   useEffect(
     () => () => {
       clearTimeout(pendingEdgeClick.current)
-      clearTimeout(pendingPaneClick.current)
+      clearTimeout(pendingPaneClick.current?.timeoutId)
+      clearTimeout(suppressPaneClickReset.current)
     },
     [],
   )
@@ -670,8 +776,7 @@ function ThinkingCanvas() {
     <CanvasHistoryProvider
       value={{
         beginTransaction,
-        commitTransaction,
-        deleteNode,
+        finishIdeaEditing,
         finishNodeAutofocus,
         pendingFocusNodeId,
       }}
@@ -680,7 +785,8 @@ function ThinkingCanvas() {
         <ContextMenuTrigger className="h-screen w-screen bg-background">
           <main
             className="h-full w-full"
-            onDoubleClick={onPaneDoubleClick}
+            onClickCapture={onCanvasClickCapture}
+            onPointerDownCapture={onCanvasPointerDownCapture}
             onWheelCapture={onWheelCapture}
           >
             <ReactFlow
