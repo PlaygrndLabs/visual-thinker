@@ -43,6 +43,7 @@ const nodeTypes = { idea: IdeaNode }
 const canvasStorageKey = 'visual-thinker.canvas.v1'
 const viewportStorageKey = 'visual-thinker.viewport.v1'
 const paneDoubleClickDelay = 500
+const newNodePointerOffset = 12
 const completedPanDistance = 3
 const emptyCanvas = { nodes: [], edges: [] }
 const defaultViewport = { x: 0, y: 0, zoom: 1 }
@@ -306,8 +307,11 @@ function ThinkingCanvas() {
 
   const createIdeaAtScreenPoint = useCallback(
     ({ x, y }) => {
-      const position = screenToFlowPosition({ x, y })
-      createIdea({ x: position.x - 96, y: position.y - 28 })
+      const position = screenToFlowPosition({
+        x: x + newNodePointerOffset,
+        y: y + newNodePointerOffset,
+      })
+      createIdea(position)
     },
     [createIdea, screenToFlowPosition],
   )
