@@ -46,6 +46,7 @@ const canvasStorageKey = 'visual-thinker.canvas.v1'
 const viewportStorageKey = 'visual-thinker.viewport.v1'
 const paneDoubleClickDelay = 500
 const newNodePointerOffset = 12
+const newIdeaNodeSize = { width: 96, height: 38 }
 const completedPanDistance = 3
 const emptyCanvas = { nodes: [], edges: [] }
 const defaultViewport = { x: 0, y: 0, zoom: 1 }
@@ -94,6 +95,30 @@ function canConnectNodes(edges, { source, target }) {
 
   const pairKey = getConnectionPairKey({ source, target })
   return !edges.some((edge) => getConnectionPairKey(edge) === pairKey)
+}
+
+function isNewIdeaMostlyVisible({ x, y }, canvasBounds, zoom) {
+  const nodeBounds = {
+    left: x + newNodePointerOffset,
+    right: x + newNodePointerOffset + newIdeaNodeSize.width * zoom,
+    top: y + newNodePointerOffset,
+    bottom: y + newNodePointerOffset + newIdeaNodeSize.height * zoom,
+  }
+  const visibleWidth = Math.max(
+    0,
+    Math.min(nodeBounds.right, canvasBounds.right) -
+      Math.max(nodeBounds.left, canvasBounds.left),
+  )
+  const visibleHeight = Math.max(
+    0,
+    Math.min(nodeBounds.bottom, canvasBounds.bottom) -
+      Math.max(nodeBounds.top, canvasBounds.top),
+  )
+
+  return (
+    visibleWidth >= (newIdeaNodeSize.width * zoom) / 2 &&
+    visibleHeight >= (newIdeaNodeSize.height * zoom) / 2
+  )
 }
 
 function ThinkingCanvas() {
@@ -288,14 +313,19 @@ function ThinkingCanvas() {
   )
 
   const createIdeaAtScreenPoint = useCallback(
-    ({ x, y }) => {
+    ({ x, y }, canvasBounds) => {
+      if (!isNewIdeaMostlyVisible({ x, y }, canvasBounds, getViewport().zoom)) {
+        return false
+      }
+
       const position = screenToFlowPosition({
         x: x + newNodePointerOffset,
         y: y + newNodePointerOffset,
       })
       createIdea(position)
+      return true
     },
-    [createIdea, screenToFlowPosition],
+    [createIdea, getViewport, screenToFlowPosition],
   )
 
   const onPaneClick = useCallback(
@@ -319,7 +349,12 @@ function ThinkingCanvas() {
       if (!event.target.classList.contains('react-flow__pane')) return
       clearTimeout(pendingPaneClick.current)
       pendingPaneClick.current = null
-      createIdeaAtScreenPoint({ x: event.clientX, y: event.clientY })
+      const didCreateIdea = createIdeaAtScreenPoint(
+        { x: event.clientX, y: event.clientY },
+        event.target.getBoundingClientRect(),
+      )
+      if (!didCreateIdea) return
+
       flagExperience(knownExperiences.createNodeByDoubleClick, {
         prompted: visibleStatusBarTip === experienceTips.addNode,
       })
