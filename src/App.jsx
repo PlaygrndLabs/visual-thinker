@@ -28,8 +28,8 @@ import {
 import { useCanvasHistory } from '@/hooks/use-canvas-history'
 import { useCanvasClipboard } from '@/hooks/use-canvas-clipboard'
 import {
+  experienceTips,
   knownExperiences,
-  shouldShowExperienceTip,
   useExperiences,
 } from '@/hooks/use-experiences'
 import { useLocalStorageState } from '@/hooks/use-local-storage-state'
@@ -122,35 +122,16 @@ function ThinkingCanvas() {
     viewportStateSchema,
   )
   const [logoResetKey, setLogoResetKey] = useState(0)
-  const [statusBarTip, setStatusBarTip] = useState('navigation')
+  const [statusBarTip, setStatusBarTip] = useState('none')
   const pendingPaneClick = useRef(null)
   const mousePanStartViewport = useRef(null)
   const trackpadPanStartViewport = useRef(null)
   const zoomGestureStartZoom = useRef(null)
-  const { experienceLevels, flagExperience } = useExperiences()
-  const showPanTip = shouldShowExperienceTip(
-    experienceLevels[knownExperiences.canvasPan],
-  )
-  const showZoomTip = shouldShowExperienceTip(
-    experienceLevels[knownExperiences.canvasScrollZoom],
-  )
-  const showCreateNodeTip = shouldShowExperienceTip(
-    experienceLevels[knownExperiences.createNodeByDoubleClick],
-  )
-  const navigationTip =
-    showPanTip && showZoomTip
-      ? 'navigation'
-      : showPanTip
-        ? 'pan'
-        : showZoomTip
-          ? 'zoom'
-          : 'none'
+  const { flagExperience, maySuggestTip } = useExperiences()
   const visibleStatusBarTip =
-    statusBarTip === 'add-node' && showCreateNodeTip
-      ? 'add-node'
-      : navigationTip
-  const panTipIsVisible = ['navigation', 'pan'].includes(visibleStatusBarTip)
-  const zoomTipIsVisible = ['navigation', 'zoom'].includes(visibleStatusBarTip)
+    statusBarTip === 'none' ? 'none' : maySuggestTip([statusBarTip])
+  const panTipIsVisible = visibleStatusBarTip === experienceTips.pan
+  const zoomTipIsVisible = visibleStatusBarTip === experienceTips.zoom
   const selectedViewport = useMemo(
     () => ({
       x: viewportState.x,
@@ -315,11 +296,13 @@ function ThinkingCanvas() {
 
       clearTimeout(pendingPaneClick.current)
       pendingPaneClick.current = setTimeout(() => {
-        if (showCreateNodeTip) setStatusBarTip('add-node')
+        setStatusBarTip(
+          maySuggestTip([experienceTips.addNode, experienceTips.pan]),
+        )
         pendingPaneClick.current = null
       }, paneDoubleClickDelay)
     },
-    [showCreateNodeTip],
+    [maySuggestTip],
   )
 
   const onPaneDoubleClick = useCallback(
@@ -330,9 +313,9 @@ function ThinkingCanvas() {
       pendingPaneClick.current = null
       createIdeaAtScreenPoint({ x: event.clientX, y: event.clientY })
       flagExperience(knownExperiences.createNodeByDoubleClick, {
-        prompted: visibleStatusBarTip === 'add-node',
+        prompted: visibleStatusBarTip === experienceTips.addNode,
       })
-      setStatusBarTip('navigation')
+      setStatusBarTip('none')
     },
     [createIdeaAtScreenPoint, flagExperience, visibleStatusBarTip],
   )
@@ -386,7 +369,14 @@ function ThinkingCanvas() {
     }
   }, [])
 
+  const handleSelectionStart = useCallback(() => {
+    setStatusBarTip(maySuggestTip([experienceTips.pan]))
+  }, [maySuggestTip])
+
   const handleZoomIn = useCallback(async () => {
+    setStatusBarTip(
+      maySuggestTip([experienceTips.zoom, experienceTips.pan]),
+    )
     setViewportState((currentState) => ({
       ...currentState,
       isFitViewActive: false,
@@ -397,9 +387,12 @@ function ThinkingCanvas() {
       ...getViewport(),
       isFitViewActive: false,
     }))
-  }, [getViewport, setViewportState, zoomIn])
+  }, [getViewport, maySuggestTip, setViewportState, zoomIn])
 
   const handleZoomOut = useCallback(async () => {
+    setStatusBarTip(
+      maySuggestTip([experienceTips.zoom, experienceTips.pan]),
+    )
     setViewportState((currentState) => ({
       ...currentState,
       isFitViewActive: false,
@@ -410,7 +403,7 @@ function ThinkingCanvas() {
       ...getViewport(),
       isFitViewActive: false,
     }))
-  }, [getViewport, setViewportState, zoomOut])
+  }, [getViewport, maySuggestTip, setViewportState, zoomOut])
 
   const handleMoveStart = useCallback(
     (event) => {
@@ -488,6 +481,10 @@ function ThinkingCanvas() {
   )
 
   const toggleFitView = useCallback(async () => {
+    setStatusBarTip(
+      maySuggestTip([experienceTips.pan, experienceTips.zoom]),
+    )
+
     if (isFitViewActive) {
       await setViewport(selectedViewport, { duration: 300 })
       setViewportState((currentState) => ({
@@ -509,6 +506,7 @@ function ThinkingCanvas() {
     fitView,
     getViewport,
     isFitViewActive,
+    maySuggestTip,
     selectedViewport,
     setViewport,
     setViewportState,
@@ -538,6 +536,7 @@ function ThinkingCanvas() {
               onNodeDragStart={beginTransaction}
               onNodeDragStop={commitTransaction}
               onSelectionChange={onSelectionChange}
+              onSelectionStart={handleSelectionStart}
               onMoveStart={handleMoveStart}
               onMoveEnd={handleMoveEnd}
               onPaneClick={onPaneClick}

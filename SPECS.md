@@ -45,7 +45,7 @@
 <area name="Experience memory">
 - The app remembers the user's familiarity with known experiencable actions so routine guidance can become simpler and disappear as the user demonstrates knowledge.
 - Known experiences include scrolling to zoom, panning the canvas through middle-button drag or Space-drag, and creating a node through canvas double-click.
-- All experience observations are handled by the `flagExperience` function returned from the custom `useExperiences` hook; the hook also returns every known experience's current level and stored evidence.
+- All experience observations are handled by the `flagExperience` function returned from the custom `useExperiences` hook; the hook also returns every known experience's current level and stored evidence and a `maySuggestTip` function for contextual guidance.
 - Each experience has one of four monotonic levels: `not-experienced-yet`, `tried-once`, `may-know-it`, or `knows-it`.
 - Each experience stores its level, its last-used date/time timestamp, and bounded evidence of immediate practice and successful recall after a delay; it does not store individual use timestamps or an unbounded lifetime usage count.
 - Experience v1 distinguishes immediate retrieval strength from durable storage strength: repeated uses within one practice bout build capped practice strength with diminishing returns, while successful unprompted reuse after a meaningful delay builds more durable retention strength.
@@ -55,6 +55,8 @@
 - Experience levels never automatically downgrade. The last-used timestamp remains available for a separate future staleness policy.
 - The experience strategy version is part of its localStorage key. Experience v1 uses `visual-thinker.experiences.v1`; a future strategy uses a new key so older evidence remains available for analysis or explicit migration.
 - Raw input events are collapsed into completed, effective interaction episodes before an experience is flagged: one wheel gesture that changes zoom, one drag that moves the viewport, or one successfully created double-click node.
+- `maySuggestTip` accepts an ordered array of candidate tip keys, evaluates each tip's own experience-level policy in priority order, and returns the first eligible tip or the empty tip when none is eligible.
+- The scroll-to-zoom and add-node tips are eligible for `not-experienced-yet` and `tried-once`; the pan tip remains eligible through `may-know-it`; no experience tip is eligible at `knows-it`.
 </area>
 </area>
 
@@ -62,11 +64,12 @@
 ### Mouse
 
 - Pressing the primary mouse button on empty canvas is provisional and does not itself create a node or perform another definitive action.
-- Clicking empty canvas does not create a node. The status bar changes from its pan-and-zoom tip to a “Double click to add node” tip only after enough time has passed to know the interaction is not a double-click.
-- Double-clicking empty canvas creates an editable idea node at the clicked position, focuses it for immediate typing, and returns the status bar to its default pan-and-zoom tip.
+- Clicking empty canvas does not create a node. After enough time has passed to know the interaction is not a double-click, the status bar requests add-node guidance first and pan guidance second through `maySuggestTip`.
+- Double-clicking empty canvas creates an editable idea node at the clicked position, focuses it for immediate typing, and clears the status-bar tip.
 - Empty canvas space uses the normal arrow mouse cursor rather than a hand cursor.
 - Starting a primary-button drag cancels node creation and draws a selection rectangle.
 - The selection rectangle has the translucent blue fill and crisp, solid blue outline associated with the Windows XP Explorer and desktop selection rectangle; its border is not dotted or dashed.
+- Starting a selection-rectangle drag requests the pan tip through `maySuggestTip`.
 - After a rectangle selection is completed, selected nodes keep their individual selected-state highlighting without a shared rectangle bounding the selection.
 - A single clicked node is selected by itself and its text box receives focus for editing.
 - When multiple nodes are selected, their text boxes do not have editing focus.
@@ -109,6 +112,8 @@
 - The standalone fit-all control uses the same neutral background, border, and icon colors as the grouped zoom controls, including when the fit-all action is unavailable.
 - Viewport controls keep neutral coloring and remain visually stationary when pressed.
 - The fit-all control toggles between fitting all canvas content into view and restoring the user’s previously chosen pan and zoom.
+- Clicking zoom-in or zoom-out requests scroll-to-zoom guidance first and pan guidance second through `maySuggestTip`.
+- Clicking fit-all or restore-view requests pan guidance first and scroll-to-zoom guidance second through `maySuggestTip`.
 - Refreshing the page preserves the active side of the fit-all toggle and both of its views; the canvas, button state, and next toggle action continue as though the page had not refreshed.
 - The bottom-right controls are offset upward by the height of one line of instruction text.
 </area>
@@ -121,11 +126,10 @@
 <area name="Instructions">
 - A dedicated `StatusBar` component displays the active canvas tip from a tip-key prop and owns the text associated with each tip key.
 - The status bar cross-fades between tips with a CSS transition when its tip-key prop changes.
-- The default “Space + drag or middle-drag to pan · Trackpad to pan · Wheel to zoom” tip is muted small text without a box style, sits in the middle of the bottom edge, uses the available horizontal space, and does not wrap onto another line.
-- The status bar can show a “Double click to add node” tip in place of its default pan-and-zoom tip.
-- Routine tips are shown while their experience is `not-experienced-yet` or `tried-once` and hidden when it reaches `may-know-it` or `knows-it`.
-- The navigation tip includes only the pan and zoom guidance the user has not yet demonstrated; when neither is needed, the status-bar guidance is visually absent.
-- The add-node tip is not shown after double-click node creation reaches `may-know-it` or `knows-it`.
+- The default status-bar tip is empty.
+- Panning, scrolling to zoom, and double-clicking to add a node have separate tip keys and separate tip text.
+- Experience tips are muted small text without a box style, sit in the middle of the bottom edge, use the available horizontal space, and do not wrap onto another line.
+- Contextual tip requests use `maySuggestTip`; the status bar shows only the highest-priority eligible candidate and remains empty when no candidate is eligible.
 </area>
 </area>
 </specs>

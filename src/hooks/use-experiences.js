@@ -11,11 +11,32 @@ export const knownExperiences = {
   createNodeByDoubleClick: 'create-node-by-double-click',
 }
 
+export const experienceTips = {
+  zoom: 'zoom',
+  pan: 'pan',
+  addNode: 'add-node',
+}
+
 const experienceLevelRank = {
   'not-experienced-yet': 0,
   'tried-once': 1,
   'may-know-it': 2,
   'knows-it': 3,
+}
+
+const tipPolicies = {
+  [experienceTips.zoom]: {
+    experience: knownExperiences.canvasScrollZoom,
+    showThroughLevel: 'tried-once',
+  },
+  [experienceTips.pan]: {
+    experience: knownExperiences.canvasPan,
+    showThroughLevel: 'may-know-it',
+  },
+  [experienceTips.addNode]: {
+    experience: knownExperiences.createNodeByDoubleClick,
+    showThroughLevel: 'tried-once',
+  },
 }
 
 const practiceBoutGapMs = 30 * 60 * 1000
@@ -120,10 +141,6 @@ function recordExperience(currentRecord, { now, prompted }) {
   }
 }
 
-export function shouldShowExperienceTip(expLevel) {
-  return experienceLevelRank[expLevel] < experienceLevelRank['may-know-it']
-}
-
 export function useExperiences() {
   const [experiences, setExperiences] = useLocalStorageState(
     experiencesStorageKey,
@@ -160,5 +177,29 @@ export function useExperiences() {
     [experiences],
   )
 
-  return { experienceLevels, experiences, flagExperience }
+  const maySuggestTip = useCallback(
+    (tips) => {
+      for (const tip of tips) {
+        const policy = tipPolicies[tip]
+        if (!policy) throw new Error(`Unknown experience tip: "${tip}"`)
+
+        if (
+          experienceLevelRank[experienceLevels[policy.experience]] <=
+          experienceLevelRank[policy.showThroughLevel]
+        ) {
+          return tip
+        }
+      }
+
+      return 'none'
+    },
+    [experienceLevels],
+  )
+
+  return {
+    experienceLevels,
+    experiences,
+    flagExperience,
+    maySuggestTip,
+  }
 }
