@@ -64,7 +64,7 @@ const isMacPlatform = /mac/i.test(
 const commandKey = isMacPlatform ? '⌘' : 'Ctrl+'
 const deleteKey = isMacPlatform ? '⌫' : 'Del'
 const shortcuts = {
-  addNode: 'Double Click',
+  addNode: 'Dbl Click',
   clear: `${commandKey}${deleteKey}`,
   copy: `${commandKey}C`,
   cut: `${commandKey}X`,
