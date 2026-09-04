@@ -35,10 +35,11 @@ The initial experiencable actions are:
 | Scroll zoom | A completed wheel gesture changes the canvas zoom | `Scroll to zoom` |
 | Canvas pan | A completed middle-button drag or Space-drag moves the viewport | `Space + drag or middle-drag to pan` |
 | Double-click node creation | A canvas double-click successfully creates a node | `Double click to add node` |
+| Double-click connection removal | A connection double-click successfully removes the connection | `Double click a connection to break it` |
 
 Trackpad panning is supported canvas behavior, but it is not stated in the pan tip and does not count as learning the middle-button or Space-drag pan experience.
 
-Raw browser events are grouped into meaningful completed episodes before they are recorded. A wheel burst is one zoom episode, a completed qualifying drag is one pan episode, and one successful double-click creation is one add-node episode.
+Raw browser events are grouped into meaningful completed episodes before they are recorded. A wheel burst is one zoom episode, a completed qualifying drag is one pan episode, one successful double-click creation is one add-node episode, and one connection successfully removed by double-click is one connection-removal episode.
 
 </known-experiences>
 
@@ -172,8 +173,10 @@ Current contextual requests are:
 | Click fit-all or restore-view | `[pan, zoom]` |
 | Single canvas click after the double-click delay | `[addNode, pan]` |
 | Start drawing a selection rectangle | `[pan]` |
+| Successfully create a connection | `[removeConnection]` |
+| Single connection click after the double-click delay | `[removeConnection]` |
 
-Successful completion of scroll zoom, middle/Space pan, or double-click node creation calls `maySuggestTip([])` when there is no next candidate. The empty result removes the current tip immediately.
+Successful completion of scroll zoom, middle/Space pan, double-click node creation, or double-click connection removal calls `maySuggestTip([])` when there is no next candidate. The empty result removes the current tip immediately.
 
 </tip-selection>
 

@@ -1,7 +1,10 @@
 import { useCallback, useMemo } from 'react'
 
 import { useLocalStorageState } from '@/hooks/use-local-storage-state'
-import { experiencesV1Schema } from '@/schemas/storage-schemas'
+import {
+  emptyExperienceRecordV1,
+  experiencesV1Schema,
+} from '@/schemas/storage-schemas'
 
 export const experiencesStorageKey = 'visual-thinker.experiences.v1'
 
@@ -9,12 +12,14 @@ export const knownExperiences = {
   canvasScrollZoom: 'canvas-scroll-zoom',
   canvasPan: 'canvas-pan',
   createNodeByDoubleClick: 'create-node-by-double-click',
+  removeConnectionByDoubleClick: 'remove-connection-by-double-click',
 }
 
 export const experienceTips = {
   zoom: 'zoom',
   pan: 'pan',
   addNode: 'add-node',
+  removeConnection: 'remove-connection',
 }
 
 const experienceLevelRank = {
@@ -49,22 +54,16 @@ const tipPolicies = {
     experience: knownExperiences.createNodeByDoubleClick,
     reminderIntervals: defaultTipReminderIntervals,
   },
-}
-
-const emptyExperience = {
-  expLevel: 'not-experienced-yet',
-  lastUsedAt: null,
-  practiceStrength: 0,
-  currentBoutUseCount: 0,
-  retentionStrength: 0,
-  spacedReturnCount: 0,
-  longestSuccessfulGapMs: 0,
+  [experienceTips.removeConnection]: {
+    experience: knownExperiences.removeConnectionByDoubleClick,
+    reminderIntervals: defaultTipReminderIntervals,
+  },
 }
 
 const defaultExperiences = Object.fromEntries(
   Object.values(knownExperiences).map((experience) => [
     experience,
-    { ...emptyExperience },
+    { ...emptyExperienceRecordV1 },
   ]),
 )
 

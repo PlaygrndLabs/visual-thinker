@@ -6,6 +6,7 @@ const tips = {
   ),
   zoom: <>Scroll to zoom</>,
   'add-node': <>Double click to add node</>,
+  'remove-connection': <>Double click a connection to break it</>,
 }
 
 export function StatusBar({ tipKey }) {

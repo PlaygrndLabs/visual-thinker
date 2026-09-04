@@ -139,6 +139,7 @@ function ThinkingCanvas() {
   const [logoResetKey, setLogoResetKey] = useState(0)
   const [pendingFocusNodeId, setPendingFocusNodeId] = useState(null)
   const [statusBarTip, setStatusBarTip] = useState(null)
+  const pendingEdgeClick = useRef(null)
   const pendingPaneClick = useRef(null)
   const mousePanStartViewport = useRef(null)
   const zoomGestureStartZoom = useRef(null)
@@ -147,6 +148,8 @@ function ThinkingCanvas() {
     statusBarTip === null ? [] : [statusBarTip],
   )
   const panTipIsVisible = visibleStatusBarTip === experienceTips.pan
+  const removeConnectionTipIsVisible =
+    visibleStatusBarTip === experienceTips.removeConnection
   const zoomTipIsVisible = visibleStatusBarTip === experienceTips.zoom
   const selectedViewport = useMemo(
     () => ({
@@ -368,21 +371,62 @@ function ThinkingCanvas() {
     ],
   )
 
+  const onEdgeClick = useCallback(
+    (event) => {
+      if (event.button !== 0) return
+
+      clearTimeout(pendingEdgeClick.current)
+      pendingEdgeClick.current = setTimeout(() => {
+        setStatusBarTip(
+          maySuggestTip([experienceTips.removeConnection]),
+        )
+        pendingEdgeClick.current = null
+      }, paneDoubleClickDelay)
+    },
+    [maySuggestTip],
+  )
+
   const onEdgeDoubleClick = useCallback(
     (event, edge) => {
+      if (event.button !== 0) return
+
       event.stopPropagation()
-      updateCanvas((currentCanvas) => ({
-        ...currentCanvas,
-        edges: currentCanvas.edges.filter(
-          (currentEdge) => currentEdge.id !== edge.id,
-        ),
-      }))
+      clearTimeout(pendingEdgeClick.current)
+      pendingEdgeClick.current = null
+      let didRemoveConnection = false
+
+      updateCanvas((currentCanvas) => {
+        if (!currentCanvas.edges.some(({ id }) => id === edge.id)) {
+          return currentCanvas
+        }
+
+        didRemoveConnection = true
+        return {
+          ...currentCanvas,
+          edges: currentCanvas.edges.filter(({ id }) => id !== edge.id),
+        }
+      })
+
+      if (!didRemoveConnection) return
+
+      flagExperience(knownExperiences.removeConnectionByDoubleClick, {
+        prompted: removeConnectionTipIsVisible,
+      })
+      setStatusBarTip(maySuggestTip([]))
     },
-    [updateCanvas],
+    [
+      flagExperience,
+      maySuggestTip,
+      removeConnectionTipIsVisible,
+      updateCanvas,
+    ],
   )
 
   useEffect(
-    () => () => clearTimeout(pendingPaneClick.current),
+    () => () => {
+      clearTimeout(pendingEdgeClick.current)
+      clearTimeout(pendingPaneClick.current)
+    },
     [],
   )
 
@@ -405,11 +449,15 @@ function ThinkingCanvas() {
   )
 
   const connectNodes = useCallback(
-    (connection) =>
+    (connection) => {
+      let didCreateConnection = false
+
       updateCanvas((currentCanvas) => {
         if (!canConnectNodes(currentCanvas.edges, connection)) {
           return currentCanvas
         }
+
+        didCreateConnection = true
 
         return {
           ...currentCanvas,
@@ -423,8 +471,15 @@ function ThinkingCanvas() {
             currentCanvas.edges,
           ),
         }
-      }),
-    [updateCanvas],
+      })
+
+      if (didCreateConnection) {
+        setStatusBarTip(
+          maySuggestTip([experienceTips.removeConnection]),
+        )
+      }
+    },
+    [maySuggestTip, updateCanvas],
   )
 
   const onConnectEnd = useCallback(
@@ -634,6 +689,7 @@ function ThinkingCanvas() {
               nodeTypes={nodeTypes}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
+              onEdgeClick={onEdgeClick}
               onEdgeDoubleClick={onEdgeDoubleClick}
               onConnect={connectNodes}
               onConnectEnd={onConnectEnd}
