@@ -16,7 +16,9 @@
 - The `useLocalStorageState` hook requires a storage key, default value, and Zod schema; accepts stored JSON only when it satisfies that schema; falls back to its schema-validated default when stored data is missing, malformed, or invalid; saves only schema-valid state to browser localStorage; and returns the same state-and-setter tuple as React `useState`.
 - Every state value persisted through `useLocalStorageState` has an explicitly defined Zod schema.
 - The app page is a full-screen React Flow canvas.
-- The project can run locally with `make dev`, which uses Bun.
+- `make setup` installs the project's locked Bun dependencies with a frozen lockfile.
+- `make dev` runs the project locally with Bun and automatically selects an available port when its preferred port is already in use.
+- `make setup && make dev` is sufficient to prepare and run the project locally from a fresh worktree.
 - Visual Thinker is deployed through a Cloudflare Pages project in the PlaygrndLabs Cloudflare account at `https://visual-thinker.pages.dev/`.
 - The Cloudflare Pages project is connected natively to the `PlaygrndLabs/visual-thinker` GitHub repository.
 - Cloudflare Pages builds every push to `main` for production and creates preview deployments for every other branch and pull request.
