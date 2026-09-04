@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const canvasClipboardType = 'application/x-visual-thinker'
 const ideaHeight = 56
@@ -66,6 +66,7 @@ export function useCanvasClipboard(
   const clipboardRef = useRef(null)
   const clipboardWriteRef = useRef(null)
   const pasteCountRef = useRef(0)
+  const [hasInternalClipboard, setHasInternalClipboard] = useState(false)
 
   const copySelection = useCallback(() => {
     const selection = getSelection(canvas)
@@ -75,6 +76,7 @@ export function useCanvasClipboard(
     clipboardRef.current = selection
     clipboardWriteRef.current = selection
     pasteCountRef.current = 0
+    setHasInternalClipboard(true)
     return getClipboardText(selection)
   }, [canvas])
 
@@ -86,6 +88,7 @@ export function useCanvasClipboard(
     clipboardRef.current = selection
     clipboardWriteRef.current = selection
     pasteCountRef.current = 0
+    setHasInternalClipboard(true)
 
     const removedNodeIds = new Set(selection.nodes.map((node) => node.id))
     const removedEdgeIds = new Set(selection.edges.map((edge) => edge.id))
@@ -222,11 +225,23 @@ export function useCanvasClipboard(
     }
   }, [pasteCanvasItems, pastePlainText])
 
+  const canPasteSelection = useCallback(async () => {
+    if (clipboardRef.current) return true
+    if (!navigator.clipboard?.readText) return false
+
+    try {
+      return (await navigator.clipboard.readText()).trim().length > 0
+    } catch {
+      return false
+    }
+  }, [])
+
   useEffect(() => {
     const writeCanvasClipboard = (event) => {
       if (isEditableTarget(event.target)) {
         clipboardRef.current = null
         clipboardWriteRef.current = null
+        setHasInternalClipboard(false)
         return
       }
 
@@ -281,6 +296,7 @@ export function useCanvasClipboard(
     const forgetInMemoryClipboard = () => {
       clipboardRef.current = null
       clipboardWriteRef.current = null
+      setHasInternalClipboard(false)
     }
 
     const forgetHiddenClipboard = () => {
@@ -302,5 +318,11 @@ export function useCanvasClipboard(
     }
   }, [pasteCanvasItems, pastePlainText])
 
-  return { copySelection, cutSelection, pasteSelection }
+  return {
+    canPasteSelection,
+    copySelection,
+    cutSelection,
+    hasInternalClipboard,
+    pasteSelection,
+  }
 }
