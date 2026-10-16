@@ -1,0 +1,1 @@
+Watch the status bar at the bottom. Tips such as 'Double click to add node', 'Scroll to zoom', 'Space + drag to pan' and 'Double click a connection to break it' appear until you have learned the gesture.
