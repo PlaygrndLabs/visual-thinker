@@ -1,0 +1,1 @@
+Install Bun, then from the repository root run `make setup` (bun install --frozen-lockfile) and `make dev`. The dev server listens on 127.0.0.1, port 5173 by default; set PORT=4317 make dev to use another port. Open http://127.0.0.1:5173 and the full-screen canvas appears.

@@ -1,0 +1,1 @@
+Open the app in a browser with WebMCP support (document.modelContext). An agent can call inspect_canvas, create_ideas, update_ideas, connect_ideas, disconnect_ideas and delete_ideas, and each change appears on the canvas and is undoable.
