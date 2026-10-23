@@ -166,6 +166,10 @@
 </area>
 </area>
 
+<area name="Idea counter">
+- A small counter in the top right corner shows how many ideas are on the canvas.
+</area>
+
 <area name="Controls">
 - Compact Google Maps-style controls at the bottom right provide zoom-in, zoom-out, and fit-all actions. Zoom-in and zoom-out form a joined vertical group; fit-all is a standalone control above them.
 - Canvas floating controls use a dedicated `CanvasFloatingButton` component built on the shared shadcn `Button`, with a 6px outer corner radius.
