@@ -17,6 +17,7 @@ import { Maximize, Minus, Plus } from 'lucide-react'
 import { CanvasFloatingButton } from '@/components/canvas-floating-button'
 import { AutomaticConnectionLine } from '@/components/automatic-connection-line'
 import { IdeaNode } from '@/components/idea-node'
+import { IdeaCounter } from '@/components/idea-counter'
 import { Logo } from '@/components/logo'
 import { StatusBar } from '@/components/status-bar'
 import { CanvasHistoryProvider } from '@/contexts/canvas-history-context'
@@ -984,6 +985,9 @@ function ThinkingCanvas() {
             >
               <Panel position="top-left" className="m-5">
                 <Logo key={logoResetKey} />
+              </Panel>
+              <Panel position="top-right" className="m-5">
+                <IdeaCounter count={canvas.nodes.length} />
               </Panel>
               <Panel
                 position="bottom-center"
